@@ -269,8 +269,8 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
         attributes.add(new Attribute("JaccardSim"));
         attributes.add(new Attribute("NodeDegree1"));
         attributes.add(new Attribute("NodeDegree2"));
-        attributes.add(new Attribute("teste weight"));
-       attributes.add(new Attribute("teste weight"));
+       // attributes.add(new Attribute("teste weight"));
+      // attributes.add(new Attribute("teste weight"));
         classLabels = new ArrayList<String>();
         classLabels.add(NON_MATCH);
         classLabels.add(MATCH);
@@ -290,6 +290,7 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
         nonRedundantCPE = new double[noOfEntities];
         comparisonsPerBlock = new double[(int)(blocks.size() + 1)];
         for (AbstractBlock block : blocks) {
+        	block.setNoOfComparisons(((BilateralBlock)block).getIndex1Entities().length* ((BilateralBlock)block).getIndex2Entities().length);
         //	System.out.println("block.getNoOfComparisons()  " +block.getNoOfComparisons() +" block.getBlockIndex()  " + block.getBlockIndex());
             comparisonsPerBlock[block.getBlockIndex()] = block.getNoOfComparisons();
             
@@ -440,7 +441,7 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
         	//System.out.println("                non "+ getWeight(comparison.getEntityId1(),comparison.getEntityId2()));
         
       // System.out.print(match +" \n"); 
-        instanceValues[7] = match;
+        instanceValues[5] = match;
         Instance newInstance = new DenseInstance(1.0, instanceValues);
         newInstance.setDataset(trainingInstances);
         return newInstance;

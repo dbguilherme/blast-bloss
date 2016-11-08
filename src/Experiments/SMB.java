@@ -212,7 +212,7 @@ public class SMB {
 		String profilesPathB=null;
 		String groundTruthPath = null;
 		String[] args1 =new String[2];
-		args1[0]="3";
+		args1[0]="dblp";
 		args1[1]="10K";
 		 WeightingScheme ws = WeightingScheme.CHI_ENTRO;
 	        //WeightingScheme ws = WeightingScheme.FISHER_ENTRO; // For dirty dataset use this test-statistic because of the low number of co-occurrence in the blocks (Fisher exact test vs. Chi-squared ~ approximated)
@@ -291,13 +291,13 @@ public class SMB {
 			 BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
 		        double[] values = bStats1.applyProcessing();
 		        System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
-			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.05);
+			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.005);
 				blockPurging.applyProcessing(blocks,adp);
 //				
 				bStats1 = new BlockStatistics(blocks, adp);
 		        values = bStats1.applyProcessing();
 		        System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
-			 BlockFiltering bf = new BlockFiltering(0.9);
+			 BlockFiltering bf = new BlockFiltering(0.8);
 			    bf.applyProcessing(blocks,adp);	
 			    bStats1 = new BlockStatistics(blocks, adp);
 		        values = bStats1.applyProcessing();
@@ -336,12 +336,13 @@ public class SMB {
 		 b_wnp.applyProcessing(blocks,adp,ebc);
 	        double[] values = b_wnp.getPerformance();
 
-	        System.out.println("pc: " + values[0]);
-	        System.out.println("pq: " + values[1]);
-	        System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
-		
-	
+	    System.out.println("pc: " + values[0]);
+	    System.out.println("pq: " + values[1]);
+	    System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
+	   System.out.println("blocks " + blocks.size() +" blocks " );
+        
 	        if(blocks.isEmpty()){
+	        	
 	        	System.out.println("errooooo");
 	        	return;
 	        }

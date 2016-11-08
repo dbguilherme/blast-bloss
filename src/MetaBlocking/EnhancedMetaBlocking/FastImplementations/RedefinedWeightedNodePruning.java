@@ -67,6 +67,8 @@ System.out.println("aquiii");
 //            }
 //        }
         else {
+        	//newBlocks.clear();
+        	
             for (int i = 0; i < noOfEntities; i++) {
                 processEntity(i);
                 verifyValidEntities(i, newBlocks,ebc);

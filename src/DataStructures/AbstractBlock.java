@@ -57,6 +57,12 @@ public abstract class AbstractBlock implements Serializable {
     public double getNoOfComparisons() {
         return comparisons;
     }
+    
+    
+    public void setNoOfComparisons(int number) {
+        this.comparisons=number;
+    }
+    
 
     public double getUtilityMeasure() {
         return utilityMeasure;

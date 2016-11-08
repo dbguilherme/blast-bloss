@@ -15,10 +15,13 @@ package OnTheFlyMethods.FastImplementations;
 
 import BlockProcessing.ComparisonRefinement.AbstractDuplicatePropagation;
 import DataStructures.AbstractBlock;
+import DataStructures.BilateralBlock;
 import MetaBlocking.ThresholdWeightingScheme;
 import MetaBlocking.WeightingScheme;
+import Utilities.Converter;
 import Utilities.ExecuteBlockComparisons;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -78,6 +81,7 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
     @Override
     protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
     	int index;
+    	retainedNeighbors.clear();
         if (!cleanCleanER) {
             for (int neighborId : validEntities) {
                 if (isValidComparison(entityId, neighborId,ebc)) {
@@ -93,11 +97,11 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
                 	 if (isValidComparison(entityId, neighborId,ebc)) {
                         totalComparisons++;
                         duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
-                        //newBlocks.
-                    }//else
-                    //	newBlocks. remove(index);
-                	 
+                        retainedNeighbors.add(neighborId - datasetLimit);
+                    }
                 }
+                BilateralBlock bBlock = new BilateralBlock(entityId, retainedNeighbors);
+               // addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
             } else {
                 for (int neighborId : validEntities) {
                     if (isValidComparison(entityId, neighborId,ebc)) {
