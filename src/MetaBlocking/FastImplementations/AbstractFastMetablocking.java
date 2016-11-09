@@ -314,23 +314,25 @@ public abstract class AbstractFastMetablocking extends AbstractFastEfficiencyMet
                    // BlastWeightedNodePruning bl= new BlastWeightedNodePruning();
                    ///System.out.println("counters_entro[neighborId] "+ counters_entro[neighborId] + "   " + chi_squared_test_E.chiSquare(cME));
                     //double x= counters_entro[neighborId];
-                    if(entityId==114 && ebc!=null && ebc.getSImilarity(entityId, neighborId-datasetLimit)>0.4){
-                    	Set<Attribute> att = ebc.exportEntityA(entityId);
-                    	for (Attribute attribute : att) {
-							System.out.print(attribute.getValue()+"  ");
-						}
-                    	System.out.print("----------");
-                    	att = ebc.exportEntityB(neighborId-datasetLimit);
-                    	for (Attribute attribute : att) {
-							System.out.print(attribute.getValue()+"  ");
-						}
-                    	System.out.println(entityId +" " + (neighborId-datasetLimit));
-                    	System.out.println("xxx  " + chi_squared_test_E.chiSquare(cME) * counters_entro[neighborId] + " ebc " + ebc.getSImilarity(entityId, neighborId-datasetLimit));
-                    }
-                    
-                    if(entityId==114 && neighborId+datasetLimit==4592){
-                 	   System.out.println(" vE[0] " + vE[0] +  " vE[1] " +  vE[0] + " v_E[0] "+ v_E[0] + " v_E[1] "+ v_E[1]);
-                    }
+//                    if(entityId==114 && ebc!=null && ebc.getSImilarity(entityId, neighborId-datasetLimit)>0.4){
+//                    	Set<Attribute> att = ebc.exportEntityA(entityId);
+//                    	for (Attribute attribute : att) {
+//							System.out.print(attribute.getValue()+"  ");
+//						}
+//                    	System.out.print("----------");
+//                    	att = ebc.exportEntityB(neighborId-datasetLimit);
+//                    	for (Attribute attribute : att) {
+//							System.out.print(attribute.getValue()+"  ");
+//						}
+//                    	System.out.println(entityId +" " + (neighborId-datasetLimit));
+//                    	System.out.println("xxx  " + chi_squared_test_E.chiSquare(cME) * counters_entro[neighborId] + " ebc " + ebc.getSImilarity(entityId, neighborId-datasetLimit));
+//                    }
+//                    
+//                    if(entityId==114 && neighborId+datasetLimit==4592){
+//                 	   System.out.println(" vE[0] " + vE[0] +  " vE[1] " +  vE[0] + " v_E[0] "+ v_E[0] + " v_E[1] "+ v_E[1]);
+//                    }
+                    double teste=chi_squared_test_E.chiSquare(cME);
+                    double teste2=counters_entro[neighborId];
                     return chi_squared_test_E.chiSquare(cME) * counters_entro[neighborId];
                     //return chi_squared_test_E.chiSquare(cME) * counters_entro[neighborId] * (a1 + a2 + a3 + a4);
 

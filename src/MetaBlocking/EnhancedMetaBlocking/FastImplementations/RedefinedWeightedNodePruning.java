@@ -1,7 +1,9 @@
 package MetaBlocking.EnhancedMetaBlocking.FastImplementations;
 
 import DataStructures.AbstractBlock;
+import DataStructures.Comparison;
 import MetaBlocking.FastImplementations.WeightedNodePruning;
+import Utilities.ComparisonIterator;
 import Utilities.ExecuteBlockComparisons;
 import MetaBlocking.ThresholdWeightingScheme;
 import MetaBlocking.WeightingScheme;
@@ -14,7 +16,7 @@ import java.util.List;
 public class RedefinedWeightedNodePruning extends WeightedNodePruning {
 
     protected double[] averageWeight;
-
+    int values[][] = new int[2516][65000];
     public RedefinedWeightedNodePruning(WeightingScheme scheme) {
         this("Redundancy Weighted Node Pruning (" + scheme + ")", scheme);
     }
@@ -47,16 +49,16 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
         if (inNeighborhood1 || inNeighborhood2) {
             return entityId < neighborId;
         }
-System.out.println("aquiii");
+
         return false;
     }
-
+    int count=0;
    // @Override
     protected void pruneEdges(List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
         if (weightingScheme.equals(WeightingScheme.ARCS)) {
             for (int i = 0; i < noOfEntities; i++) {
-                processArcsEntity(i);
-                verifyValidEntities(i, newBlocks);
+               // processArcsEntity(i);
+               // verifyValidEntities(i,0, newBlocks);
             }
         }
 //        else if (weightingScheme.equals(WeightingScheme.CHI_ENTRO)) {
@@ -68,12 +70,28 @@ System.out.println("aquiii");
 //        }
         else {
         	//newBlocks.clear();
-        	
-            for (int i = 0; i < noOfEntities; i++) {
-                processEntity(i);
-                verifyValidEntities(i, newBlocks,ebc);
-            }
+        	for(AbstractBlock block : newBlocks) {
+                ComparisonIterator iterator = block.getComparisonIterator();
+                while (iterator.hasNext()) {
+                	
+                	  Comparison comparison = iterator.next();
+                	  if(values[comparison.getEntityId1()][comparison.getEntityId2()]==1)
+                		  continue;
+                	  values[comparison.getEntityId1()][comparison.getEntityId2()]=1;
+                      final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
+                      processEntity(comparison.getEntityId1());
+                      verifyValidEntities(comparison.getEntityId1(), comparison.getEntityId2()+datasetLimit, newBlocks,ebc);
+                      count++;
+                }
+        	}
+//        	
+//            for (int i = 0; i < noOfEntities; i++) {
+//                processEntity(i);
+//                verifyValidEntities(i,0, newBlocks,ebc);
+//            }
+           
         }
+        System.out.println("count----" + count);
         
     }
 

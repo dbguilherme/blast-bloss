@@ -334,12 +334,12 @@ public class SMB {
 
 		 BlastWeightedNodePruning b_wnp = new BlastWeightedNodePruning(adp, ws, th_schme, blocks.size());
 		 b_wnp.applyProcessing(blocks,adp,ebc);
-	        double[] values = b_wnp.getPerformance();
+	     double[] values = b_wnp.getPerformance();
 
 	    System.out.println("pc: " + values[0]);
 	    System.out.println("pq: " + values[1]);
 	    System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
-	   System.out.println("blocks " + blocks.size() +" blocks " );
+	    System.out.println("blocks " + blocks.size() +" blocks " );
         
 	        if(blocks.isEmpty()){
 	        	
@@ -391,7 +391,7 @@ public class SMB {
 
 			//blockHash.produceHash(blocks, ebc);
 			int tamanho = 100;
-			while(tamanho<=1000)
+			//while(tamanho<=1000)
 			{
 
 				writer1.write("level "+tamanho +"\n");
@@ -399,7 +399,7 @@ public class SMB {
 				writer3.write("level "+tamanho+"\n");
 				writer4.write("level "+tamanho+"\n");
 
-				for (j = 0;j< 10; j++) 
+				for (j = 0;j< 1; j++) 
 				{
 					swep.applyProcessing(j, classifiers, ebc, tamanho, writer1,writer2,writer3,writer4,i,profilesPathA.split("/")[profilesPathA.split("/").length-1]);
 

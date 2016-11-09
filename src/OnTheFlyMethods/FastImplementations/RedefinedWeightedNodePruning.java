@@ -77,39 +77,40 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
         metrics[2] = totalComparisons;
         return metrics;
     }
-
+ int count=0;
     @Override
-    protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
+    protected void verifyValidEntities(int entityId, int neighborId, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
     	int index;
     	retainedNeighbors.clear();
         if (!cleanCleanER) {
-            for (int neighborId : validEntities) {
-                if (isValidComparison(entityId, neighborId,ebc)) {
-                    totalComparisons++;
-                    duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
-                }
-            }
+//            for (int neighborId : validEntities) {
+//                if (isValidComparison(entityId, neighborId,ebc)) {
+//                    totalComparisons++;
+//                    duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
+//                }
+//            }
         } else {
             if (entityId < datasetLimit) {
-            	//Iterator<Integer> temp = validEntitiesB.iterator();
-                for (int neighborId : validEntities) {
-                	// index=temp.next();
+//            	//Iterator<Integer> temp = validEntitiesB.iterator();
+             //  for (int neighborId : validEntities) 
+                {
+//                	// index=temp.next();
                 	 if (isValidComparison(entityId, neighborId,ebc)) {
                         totalComparisons++;
                         duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
-                        retainedNeighbors.add(neighborId - datasetLimit);
+//                        //retainedNeighbors.add(neighborId - datasetLimit);
                     }
-                }
-                BilateralBlock bBlock = new BilateralBlock(entityId, retainedNeighbors);
-               // addDecomposedBlock(entityId, retainedNeighbors, newBlocks);
+
+               }
             } else {
-                for (int neighborId : validEntities) {
-                    if (isValidComparison(entityId, neighborId,ebc)) {
+              //  for (int neighborId : validEntities) 
+                {
+                    if (isValidComparison(entityId, neighborId,ebc)) 
+                    {
                         totalComparisons++;
                         duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
-                        
-                        if(!duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId)) )
-                        	System.out.println("weight--" );
+//                        
+//                       
                     }
                 }
             }

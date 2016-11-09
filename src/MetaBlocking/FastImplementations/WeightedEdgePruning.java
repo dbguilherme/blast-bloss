@@ -2,6 +2,7 @@ package MetaBlocking.FastImplementations;
 
 import DataStructures.AbstractBlock;
 import MetaBlocking.WeightingScheme;
+import Utilities.ExecuteBlockComparisons;
 
 import java.util.List;
 
@@ -65,7 +66,6 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
 
                 counters[neighborId] += 1 / blockComparisons;
                 counters_entro[neighborId] += entityIndex.getEntropyBlock(blockIndex);
-
                 validEntities.add(neighborId);
             }
         }
@@ -105,12 +105,13 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
             return;
         }
 
-      //  if(entityId==114)
-        //	System.out.println("ok");
+        
         for (int blockIndex : associatedBlocks) {
             setNormalizedNeighborEntities(blockIndex, entityId);
             
             for (int neighborId : neighbors) {
+            	if(entityId==1178 && neighborId==2562)
+                	System.out.println("ok");
                 if (flags[neighborId] != entityId) {
                     counters[neighborId] = 0;
                     counters_entro[neighborId] = 0;
@@ -195,7 +196,7 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
         }
     }
 
-    protected void verifyValidEntities(int entityId, List<AbstractBlock> newBlocks) {
+    protected void verifyValidEntities(int entityId, int i, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
         retainedNeighbors.clear();
         if (!cleanCleanER) {
             for (int neighborId : validEntities) {
