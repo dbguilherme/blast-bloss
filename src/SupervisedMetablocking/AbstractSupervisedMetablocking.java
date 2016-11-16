@@ -240,7 +240,7 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
     	 Instances data=loadSet("/tmp/test.arff");
     	 
     	 
-    	 int count=0,erro=0;
+    	 int count=0,erro=0,falso_positivo=0;
     	 for (int i = 0; i < data.size(); i++) {
     		 int instanceLabel = (int) classifiers[0].classifyInstance(data.get(i));  
              if (instanceLabel == 1) {
@@ -252,13 +252,17 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
              {
             	 if(data.get(i).classValue()==1){
             		 erro++;
-            		 
+            		 for (int j = 0; j < 6; j++) {
+						System.out.print(data.get(i).value(j) +"  ");
+					}
+            		 System.out.println("");
             		 //System.out.println(data.get(i).v);
-            	 }
+            	 }else
+            		 falso_positivo++;
             		 
              }
 		}
-    	 System.out.println("count " + count +" erro "+ erro);
+    	 System.out.println("count " + count +" erro "+ erro +"  "+ falso_positivo);
     	 
     	 
     	 

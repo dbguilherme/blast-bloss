@@ -126,7 +126,7 @@ public class ExecuteBlockComparisons {
 		JaccardSimilarity jc =new JaccardSimilarity();
 		//JaroWinkler jw = new JaroWinkler();
 		//Levenshtein le= new Levenshtein();
-		System.out.println(dataset1[entityIds1].att_value + " --------" + dataset2[entityIds2].att_value);
+		//System.out.println(dataset1[entityIds1].att_value + " --------" + dataset2[entityIds2].att_value);
 		if(dataset2!=null)
 			return jc.getSimilarity(dataset1[entityIds1].att_value,dataset2[entityIds2].att_value );
 		else

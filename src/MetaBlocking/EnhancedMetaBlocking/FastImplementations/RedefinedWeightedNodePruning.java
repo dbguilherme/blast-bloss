@@ -19,8 +19,11 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import BlockProcessing.ComparisonRefinement.AbstractDuplicatePropagation;
 
@@ -29,9 +32,9 @@ import BlockProcessing.ComparisonRefinement.AbstractDuplicatePropagation;
  */
 public class RedefinedWeightedNodePruning extends WeightedNodePruning {
 
-	HashSet<Integer,Integer> counter_a_set = new HashSet<>();
+	Map<Integer,List<Integer>> map = new HashMap<Integer,List<Integer>>();
     protected double[] averageWeight;
-    int values[][] = new int[25000][25000];
+    int values[][] = new int[3000][65000];
     public RedefinedWeightedNodePruning(WeightingScheme scheme) {
         this("Redundancy Weighted Node Pruning (" + scheme + ")", scheme);
     }
@@ -117,7 +120,7 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
         attributes.add(new Attribute("JaccardSim"));
         attributes.add(new Attribute("NodeDegree1"));
         attributes.add(new Attribute("NodeDegree2"));
-       // attributes.add(new Attribute("teste weight"));
+        attributes.add(new Attribute("teste weight"));
       // attributes.add(new Attribute("teste weight"));
         classLabels = new ArrayList<String>();
         classLabels.add("0");
@@ -132,8 +135,8 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
     
    // @Override
     protected List<AbstractBlock> pruneEdges(List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc, AbstractDuplicatePropagation adp) {
-    	List<Integer> retainedEntitiesD1 = new ArrayList<Integer>();
-  	    List<Integer> retainedEntitiesD2 = new ArrayList<Integer>();
+       List<Integer> retainedEntitiesD1 = new ArrayList<Integer>();
+  	   List<Integer> retainedEntitiesD2 = new ArrayList<Integer>();
   	   List<AbstractBlock> blockAfterPrunning = new ArrayList<AbstractBlock>();
   	   // blockAfterPrunning.addAll(newBlocks);
   	   // blockAfterPrunning.clear();
@@ -150,15 +153,7 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
                // verifyValidEntities(i,0, newBlocks);
             }
         }
-//        else if (weightingScheme.equals(WeightingScheme.CHI_ENTRO)) {
-//            System.out.println("\n\n\n chi entro in redefined wnp\n\n\n");
-//            for (int i = 0; i < noOfEntities; i++) {
-//                processCHI_entro_Entity(i);
-//                verifyValidEntities(i, newBlocks);
-//            }
-//        }
         else {
-        	//newBlocks.clear();
         	for(AbstractBlock block : newBlocks) {
         		retainedEntitiesD1.clear();
         		retainedEntitiesD2.clear();
@@ -166,12 +161,33 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
                 while (iterator.hasNext()) {
                 	
                 	  Comparison comparison = iterator.next();
-                	  if(values[comparison.getEntityId1()][comparison.getEntityId2()]==1)
-                	      continue;
-                	  values[comparison.getEntityId1()][comparison.getEntityId2()]=1;
+                	  int flag=0;
+                	  Integer key = comparison.getEntityId1();
+                	  List<Integer> list = map.get(key);
+                	  if (list == null)
+                	  {
+                	      list = new LinkedList<Integer>();
+                	      map.put(key,list);
+                	  }else{
+                		  for (int j = 0; j < list.size(); j++) {
+                			  if(list.get(j).equals(comparison.getEntityId2())){
+//                				  System.out.println("encontrou----------------------");
+  								  flag=1;
+                				  break;
+                			}
+                		  }
+                	  }
+                	  list.add(comparison.getEntityId2());
+                	 
+                	  if(flag==1)
+                		  continue;
+//                	  if(values[comparison.getEntityId1()][comparison.getEntityId2()]==1){
+//                		  System.out.println("ok");
+//                		  continue;
+//                	  }
+//                	  values[comparison.getEntityId1()][comparison.getEntityId2()]=1;
+                	  
                 	  processEntity(comparison.getEntityId1());
-                	 // }
-                	 // 
                       final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
                       
                       if(verifyValidEntities(comparison.getEntityId1(), comparison.getEntityId2()+datasetLimit, newBlocks,ebc)){
@@ -180,7 +196,7 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
                     	  if(!retainedEntitiesD2.contains(comparison.getEntityId2()))
                     		  retainedEntitiesD2.add(comparison.getEntityId2());
                     	  ////////////////////////////
-                    	  double[] instanceValues = new double[6];
+                    	  double[] instanceValues = new double[7];
 
                           int entityId2 = comparison.getEntityId2() + entityIndex.getDatasetLimit();
 
@@ -202,17 +218,10 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
                           instanceValues[2] = commonBlockIndices.size() / (redundantCPE[comparison.getEntityId1()] + redundantCPE[entityId2] - commonBlockIndices.size());
                           instanceValues[3] = nonRedundantCPE[comparison.getEntityId1()];
                           instanceValues[4] = nonRedundantCPE[entityId2];
+                          instanceValues[5] =ebc.getSimilarityAttribute(comparison.getEntityId1(), comparison.getEntityId2());
                           
-//                          for (int i = 0; i < instanceValues.length; i++) {
-//                        	  System.out.print(instanceValues[i] +" ");
-//                          }
-//                          System.out.println();
-                          
-                          instanceValues[5] = adp.isSuperfluous(getComparison(comparison.getEntityId1(), entityId2))?1:0;
-//                          if(adp.isSuperfluous(getComparison(comparison.getEntityId1(), entityId2))){
-//                        	  
-//                        	  System.out.println("ok uma ");
-//                          }
+                          instanceValues[6] = adp.isSuperfluous(getComparison(comparison.getEntityId1(), entityId2))?1:0;
+
                           Instance newInstance = new DenseInstance(1.0, instanceValues);
                           newInstance.setDataset(trainingInstances);
                           trainingInstances.add(newInstance);
