@@ -99,7 +99,16 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
 
     protected void processEntity(int entityId) {
         validEntities.clear();
-        validEntitiesB.clear();
+       // validEntitiesB.clear();
+        
+        for(int i=0; i< flags.length;i++){
+        	 flags[i] = -1;
+             counters[i] = 0;
+             counters_entro[i] = 0;
+                
+       }
+       
+        
         final int[] associatedBlocks = entityIndex.getEntityBlocks(entityId, 0);
         if (associatedBlocks.length == 0) {
             return;
@@ -110,8 +119,8 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
             setNormalizedNeighborEntities(blockIndex, entityId);
             
             for (int neighborId : neighbors) {
-            	if(entityId==1178 && neighborId==2562)
-                	System.out.println("ok");
+            //	if(entityId==1178 && neighborId==2562)
+             //   	System.out.println("ok");
                 if (flags[neighborId] != entityId) {
                     counters[neighborId] = 0;
                     counters_entro[neighborId] = 0;
@@ -124,7 +133,9 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
               // if(counters[neighborId]>5)
               //  System.out.println(counters[neighborId]+  " counters_entro: " + counters_entro[neighborId] + " " + neighborId);
                 validEntities.add(neighborId);
-                validEntitiesB.add(blockIndex);
+                //validEntitiesB.add(blockIndex);
+                		//if(entityId==1178 && neighborId==2562)
+                        //	System.out.println("ok");
             }
         }
     }
@@ -196,7 +207,7 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
         }
     }
 
-    protected void verifyValidEntities(int entityId, int i, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
+    protected boolean verifyValidEntities(int entityId, int i, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
         retainedNeighbors.clear();
         if (!cleanCleanER) {
             for (int neighborId : validEntities) {
@@ -230,5 +241,6 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
                 addReversedDecomposedBlock(entityId - datasetLimit, retainedNeighbors, newBlocks);
             }
         }
+        return false;
     }
 }

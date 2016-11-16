@@ -78,8 +78,8 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
         return metrics;
     }
  int count=0;
-    @Override
-    protected void verifyValidEntities(int entityId, int neighborId, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
+    //@Override
+    protected boolean verifyValidEntities(int entityId, int neighborId, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
     	int index;
     	retainedNeighbors.clear();
         if (!cleanCleanER) {
@@ -94,11 +94,14 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
 //            	//Iterator<Integer> temp = validEntitiesB.iterator();
              //  for (int neighborId : validEntities) 
                 {
+            	  // if(entityId==1178 && neighborId==2562)
+                 //  	System.out.println("ok");
 //                	// index=temp.next();
                 	 if (isValidComparison(entityId, neighborId,ebc)) {
                         totalComparisons++;
                         duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
 //                        //retainedNeighbors.add(neighborId - datasetLimit);
+                        return true;
                     }
 
                }
@@ -110,10 +113,11 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
                         totalComparisons++;
                         duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
 //                        
-//                       
+                      return true; 
                     }
                 }
             }
         }
+		return false;
     }
 }

@@ -41,6 +41,7 @@ import OnTheFlyMethods.FastImplementations.BlastWeightedNodePruning;
 import SupervisedMetablocking.SupervisedCNP;
 import SupervisedMetablocking.SupervisedWEP;
 import Utilities.BlockStatistics;
+import Utilities.ComparisonIterator;
 import Utilities.ExecuteBlockComparisons;
 import Utilities.ExportBlocks;
 import Utilities.RepresentationModel;
@@ -212,7 +213,7 @@ public class SMB {
 		String profilesPathB=null;
 		String groundTruthPath = null;
 		String[] args1 =new String[2];
-		args1[0]="dblp";
+		args1[0]="3";
 		args1[1]="10K";
 		 WeightingScheme ws = WeightingScheme.CHI_ENTRO;
 	        //WeightingScheme ws = WeightingScheme.FISHER_ENTRO; // For dirty dataset use this test-statistic because of the low number of co-occurrence in the blocks (Fisher exact test vs. Chi-squared ~ approximated)
@@ -331,7 +332,7 @@ public class SMB {
 		
 		//for(profiles)
 		//System.out.println(" numero comparações --> "+ num_blocks);
-
+		adp =new BilateralDuplicatePropagation(groundTruthPath);
 		 BlastWeightedNodePruning b_wnp = new BlastWeightedNodePruning(adp, ws, th_schme, blocks.size());
 		 b_wnp.applyProcessing(blocks,adp,ebc);
 	     double[] values = b_wnp.getPerformance();
@@ -340,12 +341,16 @@ public class SMB {
 	    System.out.println("pq: " + values[1]);
 	    System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
 	    System.out.println("blocks " + blocks.size() +" blocks " );
-        
+	    int count=0;
+	   
 	        if(blocks.isEmpty()){
 	        	
 	        	System.out.println("errooooo");
 	        	return;
 	        }
+	        BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
+	        values = bStats1.applyProcessing();
+	        System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
 		//            System.out.println("\n\n\n\n\n======================= Supervised CEP =======================");
 
 		Classifier[] classifiers = getSupervisedWepClassifiers();

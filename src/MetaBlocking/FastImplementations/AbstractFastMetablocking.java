@@ -10,6 +10,7 @@ import DataStructures.IdDuplicates;
 import DataStructures.UnilateralBlock;
 import MetaBlocking.WeightingScheme;
 import OnTheFlyMethods.FastImplementations.BlastWeightedNodePruning;
+import Utilities.ComparisonIterator;
 import Utilities.ExecuteBlockComparisons;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public abstract class AbstractFastMetablocking extends AbstractFastEfficiencyMet
         weightingScheme = wScheme;
     }
 
-    protected abstract void pruneEdges(List<AbstractBlock> blocks, ExecuteBlockComparisons ebc);
+    protected abstract List<AbstractBlock> pruneEdges(List<AbstractBlock> blocks, ExecuteBlockComparisons ebc, AbstractDuplicatePropagation adp);
 
     protected abstract void setThreshold();
 
@@ -102,7 +103,19 @@ public abstract class AbstractFastMetablocking extends AbstractFastEfficiencyMet
         }
 
         setThreshold();
-        pruneEdges(blocks,ebc);
+       List<AbstractBlock> blocksB=    		pruneEdges(blocks,ebc,adp);
+//       int count=0;
+//       for(AbstractBlock block : blocksB) {
+//	    	ComparisonIterator iterator = block.getComparisonIterator();
+//           while (iterator.hasNext()) {
+//           	count++;
+//           }
+//       }
+//	    
+//	    System.out.println("------------------------------------------" + count);
+        blocks.clear();
+        blocks.addAll(blocksB);
+        
     }
 
     protected void freeMemory() {

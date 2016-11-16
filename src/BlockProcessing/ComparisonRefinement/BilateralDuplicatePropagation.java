@@ -50,9 +50,9 @@ public class BilateralDuplicatePropagation extends AbstractDuplicatePropagation 
     public boolean isSuperfluous(Comparison comparison) {
         Integer id1 = comparison.getEntityId1();
         Integer id2 = comparison.getEntityId2();
-        if (entities1.contains(id1) || entities2.contains(id2)) {
-            return false;
-        }
+//        if (entities1.contains(id1) || entities2.contains(id2)) {
+//            return false;
+//        }
         
         final IdDuplicates tempDuplicates = new IdDuplicates(id1, id2);
         if (duplicates.contains(tempDuplicates)) {

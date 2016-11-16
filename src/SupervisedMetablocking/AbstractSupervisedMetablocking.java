@@ -29,7 +29,10 @@ import Utilities.StatisticsUtilities;
 import jsc.contingencytables.ContingencyTable2x2;
 import jsc.contingencytables.FishersExactTest;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -218,6 +221,10 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
             threshold = threshold_max / 2;
     }
     
+    
+    
+    
+    
     public void applyProcessing(int iteration, Classifier[] classifiers, ExecuteBlockComparisons ebc, int tamanho, BufferedWriter writer1, BufferedWriter writer2, BufferedWriter writer3, BufferedWriter writer4, int i2, String string) throws Exception {
 //    	 for (int i = 0; i < entityIndex.getNoOfEntities(); i++) {
 //             processEntity(i);
@@ -225,31 +232,77 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
 //             averageWeight[i] = threshold;
 //         }
     	
-        getTrainingSet(iteration);
-        for (int i = 0; i < classifiers.length; i++) {
-            System.out.println("\n\nClassifier id\t:\t" + i);
-            initializeDataStructures();
-            
-            long startingTime = System.currentTimeMillis();
-            classifiers[i].buildClassifier(trainingInstances);
-            applyClassifier(classifiers[i]);
-            List<AbstractBlock> newBlocks = gatherComparisons();
-            double overheadTime = System.currentTimeMillis()-startingTime;
-            System.out.println("CL"+i+" Overhead time\t:\t" + overheadTime);
-            overheadTimes[i].add(overheadTime);
-            
-            //commented out for faster experiments
-            //use when measuring resolution time
-            long comparisonsTime = 0;//ebc.comparisonExecution(newBlocks);
-            System.out.println("CL"+i+" Classification time\t:\t" + (comparisonsTime+overheadTime));
-            resolutionTimes[i].add(new Double(comparisonsTime+overheadTime));
-            
-            double th = 0;
-			processComparisons(i, iteration, writer1, writer2,writer3, writer4,th);
-        }
+    	 
+    	 initializeDataStructures();
+    	 classifiers[0].buildClassifier(loadSet("/tmp/final_treina.arff"));
+    	 
+    	 
+    	 Instances data=loadSet("/tmp/test.arff");
+    	 
+    	 
+    	 int count=0,erro=0;
+    	 for (int i = 0; i < data.size(); i++) {
+    		 int instanceLabel = (int) classifiers[0].classifyInstance(data.get(i));  
+             if (instanceLabel == 1) {
+                 
+            	 if(data.get(i).classValue()==1){
+            		 count++;
+            	 }
+             }else
+             {
+            	 if(data.get(i).classValue()==1){
+            		 erro++;
+            		 
+            		 //System.out.println(data.get(i).v);
+            	 }
+            		 
+             }
+		}
+    	 System.out.println("count " + count +" erro "+ erro);
+    	 
+    	 
+    	 
+//        getTrainingSet(iteration);
+//        for (int i = 0; i < classifiers.length; i++) {
+//            System.out.println("\n\nClassifier id\t:\t" + i);
+//            initializeDataStructures();
+//            
+//            long startingTime = System.currentTimeMillis();
+//            classifiers[i].buildClassifier(trainingInstances);
+//            applyClassifier(classifiers[i]);
+//            List<AbstractBlock> newBlocks = gatherComparisons();
+//            double overheadTime = System.currentTimeMillis()-startingTime;
+//            System.out.println("CL"+i+" Overhead time\t:\t" + overheadTime);
+//            overheadTimes[i].add(overheadTime);
+//            
+//            //commented out for faster experiments
+//            //use when measuring resolution time
+//            long comparisonsTime = 0;//ebc.comparisonExecution(newBlocks);
+//            System.out.println("CL"+i+" Classification time\t:\t" + (comparisonsTime+overheadTime));
+//            resolutionTimes[i].add(new Double(comparisonsTime+overheadTime));
+//            
+//            double th = 0;
+//			processComparisons(i, iteration, writer1, writer2,writer3, writer4,th);
+//        }
     }
     
-    protected boolean areMatching(Comparison comparison) {
+    private Instances loadSet(String file) {
+    	BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			Instances data = new Instances(reader);
+	    	reader.close();
+	    	data.setClassIndex(data.numAttributes() - 1);
+	    	return data;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return null;
+		
+	}
+
+	protected boolean areMatching(Comparison comparison) {
         if (dirtyER) {
             final IdDuplicates duplicatePair1 = new IdDuplicates(comparison.getEntityId1(), comparison.getEntityId2());
             final IdDuplicates duplicatePair2 = new IdDuplicates(comparison.getEntityId2(), comparison.getEntityId1());
@@ -485,14 +538,19 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
                 }
 
                 trainingSet.add(comparison);
+                System.out.println("match " + match +" ");
                 Instance newInstance = getFeatures(match, commonBlockIndices, comparison, nonMatchRatio);
+                for (int i = 0; i < 5; i++) {
+					System.out.print(newInstance.valueSparse(i)+" ");
+				}
+                System.out.println();
                 trainingInstances.add(newInstance);
             }
         }
 
         sampleMatches.add((double) trueMetadata);
         sampleNonMatches.add((double) (trainingSet.size() - trueMetadata));
-        System.out.println("match " + trueMetadata +" "+ (trainingSet.size() - trueMetadata) +" "+ matchming);
+        System.out.println("match " + trueMetadata +" "+ (trainingSet.size() - trueMetadata) +" total dup "+ matchming);
     }
     
     private void prepareStatistics() {

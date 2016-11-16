@@ -76,10 +76,10 @@ public class BlastWeightedNodePruning extends RedefinedWeightedNodePruning {
                 double th12 = Math.sqrt(Math.pow(averageWeight[entityId], 2) + Math.pow(averageWeight[neighborId], 2)) / 4;
                // System.out.println(weight +"  " );
                 
-            	if(entityId==1178)
-            		System.out.println(entityId+" entityId  "+ " neighborId " +  neighborId+ " "+  weight + " th12 " + th12 + " " + "   " + averageWeight[entityId] +" " + adp.getNoOfDuplicates());
-                if (th12 <= weight) {
-                
+                 if (th12 <= weight) {
+                	   if(entityId==1178 )
+                   		System.out.println(entityId+" entityId  "+ " neighborId " +  neighborId+ " "+  weight + " th12 " + th12 + " " + "   " + averageWeight[entityId] +" " + adp.getNoOfDuplicates());
+                   
 //                	if(entityId < neighborId){
 //                	
 //                	 if(isMatch(entityId, neighborId)){
