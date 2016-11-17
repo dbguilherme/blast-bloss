@@ -21,6 +21,7 @@ import DataStructures.UnilateralBlock;
 import Utilities.Converter;
 import Utilities.ExecuteBlockComparisons;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -43,13 +44,13 @@ public abstract class AbstractFastEfficiencyMethod extends AbstractEfficiencyMet
     protected FastEntityIndex entityIndex;
     protected BilateralBlock[] bBlocks;
     protected final Set<Integer> validEntities;
-    protected final Set<Integer> validEntitiesB;
+    protected final List<Integer> validEntitiesB;
     protected UnilateralBlock[] uBlocks;
 
     public AbstractFastEfficiencyMethod(String nm) {
         super(nm);
         validEntities = new HashSet<>();
-        validEntitiesB = new HashSet<>();
+        validEntitiesB = new ArrayList<>();
     }
 
     protected void addDecomposedBlock(int entityId, Collection<Integer> neighbors, List<AbstractBlock> newBlocks) {

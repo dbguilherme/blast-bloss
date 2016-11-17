@@ -292,7 +292,7 @@ public class SMB {
 			BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
 		    double[] values = bStats1.applyProcessing();
 		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
-			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.01);
+			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.001);
 			blockPurging.applyProcessing(blocks,adp);
 			
 			//////////			
@@ -304,6 +304,7 @@ public class SMB {
 			bStats1 = new BlockStatistics(blocks, adp);
 		    values = bStats1.applyProcessing();
 		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
+		    
 		}else{
 			profiles= new List[1];
 			profiles[0] = (List<EntityProfile>) SerializationUtilities.loadSerializedObject(profilesPathA);

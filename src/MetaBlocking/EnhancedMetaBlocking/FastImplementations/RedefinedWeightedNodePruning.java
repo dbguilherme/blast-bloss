@@ -154,50 +154,33 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
             }
         }
         else {
-//        	for(AbstractBlock block : newBlocks) {
-//        		retainedEntitiesD1.clear();
-//        		retainedEntitiesD2.clear();
-//                ComparisonIterator iterator = block.getComparisonIterator();
-//                while (iterator.hasNext()) {
-//                	
-//                	  Comparison comparison = iterator.next();
-//                	  int flag=0;
-//                	  //Integer key = comparison.getEntityId1();
-//                	  Integer value = map.get(comparison.getEntityId1());
-//                	  if (value !=null && value==comparison.getEntityId2())
-//                	  {
+        	//for(AbstractBlock block : newBlocks) 
+        	{
+        		retainedEntitiesD1.clear();
+        		retainedEntitiesD2.clear();
+              //  ComparisonIterator iterator = block.getComparisonIterator();
+                for (int i = 0; i < noOfEntities; i++){
+                	
+                	  //Comparison comparison = iterator.next();
+                	 // int flag=0;
+                	  //Integer key = comparison.getEntityId1();
+//                	  Integer value = map.get(i);
+//                	  if (value !=null && value==comparison.getEntityId2()){
+//                		 // System.out.println("----");
 //                		  continue;
-////                	      list = new LinkedList<Integer>();
-////                	      map.put(key,list);
-////                	  }else{
-////                		  for (int j = 0; j < list.size(); j++) {
-////                			  if(list.get(j).equals(comparison.getEntityId2())){
-//////                				  System.out.println("encontrou----------------------");
-////  								  flag=1;
-////                				  break;
-////                			}
-////                		  }
 //                	  }
+//                		  
 //                	  value = map.get(comparison.getEntityId2());
-//                	  if (value !=null && value == comparison.getEntityId1())
-//                	  {
+//                	  if (value !=null && value == comparison.getEntityId1()){
+//                		 // System.out.println("----");
 //                		  continue;
 //                	  }
+//                		  
 //                	  map.put(comparison.getEntityId1(),comparison.getEntityId2());
-//////                	 
-////                	  if(flag==1)
-////                		  continue;
-////                	  if(values[comparison.getEntityId1()][comparison.getEntityId2()]==1){
-////                		  System.out.println("ok");
-////                		  continue;
-////                	  }
-////                	  values[comparison.getEntityId1()][comparison.getEntityId2()]=1;
-//                	  
-//                	  processEntity(comparison.getEntityId1());
-//                     
-//                      
-//                      if(verifyValidEntities(comparison.getEntityId1(), comparison.getEntityId2()+datasetLimit, newBlocks,ebc)){
-//                    	  
+                	  processEntity(i);
+                      
+                      if(verifyValidEntities(i, 0, newBlocks,ebc,trainingInstances)){
+                    	  
 //                    	  final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
 //                    	  if(commonBlockIndices==null)
 //                    		  continue;
@@ -229,45 +212,43 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
 //                          instanceValues[2] = commonBlockIndices.size() / (redundantCPE[comparison.getEntityId1()] + redundantCPE[entityId2] - commonBlockIndices.size());
 //                          instanceValues[3] = nonRedundantCPE[comparison.getEntityId1()];
 //                          instanceValues[4] = nonRedundantCPE[entityId2];
-//                          instanceValues[5] =ebc.getSimilarityAttribute(comparison.getEntityId1(), comparison.getEntityId2());
+//                         // instanceValues[5] =ebc.getSimilarityAttribute(comparison.getEntityId1(), comparison.getEntityId2());
 //                          
 //                          instanceValues[6] = adp.isSuperfluous(getComparison(comparison.getEntityId1(), entityId2))?1:0;
 //
 //                          Instance newInstance = new DenseInstance(1.0, instanceValues);
 //                          newInstance.setDataset(trainingInstances);
 //                          trainingInstances.add(newInstance);
-//                    	 
-//                    	 // if(instanceValues[6]==1)
-//                    	//	  System.out.println();
-//                      };
-//                      if(apagar++%10000==0)
-//                		  System.out.println(apagar);
-//                      count++;
-//                }
-//                if(!retainedEntitiesD1.isEmpty() || !retainedEntitiesD2.isEmpty()){
-//                	int[] blockEntitiesD1 = Converter.convertCollectionToArray(retainedEntitiesD1);
-//                	int[] blockEntitiesD2 = Converter.convertCollectionToArray(retainedEntitiesD2);
-//                	blockAfterPrunning.add(new BilateralBlock(blockEntitiesD1, blockEntitiesD2, 0.0));
-//                	//if(retainedEntitiesD1.size()>2)
-//                	//	System.out.println("ok");
-//                }
-//        	}
-//        	BufferedWriter writer;
-//			try {
-//				writer = new BufferedWriter(new FileWriter("/tmp/test.arff"));
-//				writer.write(trainingInstances.toString());
-//	        	 writer.flush();
-//	        	 writer.close();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+                    	 
+                    	 // if(instanceValues[6]==1)
+                    	//	  System.out.println();
+                      };
+                     
+                }
+                if(!retainedEntitiesD1.isEmpty() || !retainedEntitiesD2.isEmpty()){
+                	int[] blockEntitiesD1 = Converter.convertCollectionToArray(retainedEntitiesD1);
+                	int[] blockEntitiesD2 = Converter.convertCollectionToArray(retainedEntitiesD2);
+                	blockAfterPrunning.add(new BilateralBlock(blockEntitiesD1, blockEntitiesD2, 0.0));
+                	//if(retainedEntitiesD1.size()>2)
+                	//	System.out.println("ok");
+                }
+        	}
+        	BufferedWriter writer;
+			try {
+				writer = new BufferedWriter(new FileWriter("/tmp/test.arff"));
+				writer.write(trainingInstances.toString());
+	        	 writer.flush();
+	        	 writer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         	 
 //        	
-            for (int i = 0; i < noOfEntities; i++) {
-                processEntity(i);
-                verifyValidEntities(i,0, newBlocks,ebc);
-            }
+//            for (int i = 0; i < noOfEntities; i++) {
+//                processEntity(i);
+//                verifyValidEntities(i,0, newBlocks,ebc);
+//            }
            
         }
         System.out.println("count----" + count);

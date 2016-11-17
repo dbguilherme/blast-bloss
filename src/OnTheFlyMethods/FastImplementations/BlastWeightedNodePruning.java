@@ -44,69 +44,39 @@ public class BlastWeightedNodePruning extends RedefinedWeightedNodePruning {
     int acerto=0;
   //  @Override
     protected boolean isValidComparison(int entityId, int neighborId, ExecuteBlockComparisons ebc) {
-    	double weight=0;
-    	if(entityId==1178 && neighborId==2562)
-        	System.out.println("ok");
-    	weight = getWeight(entityId, neighborId,ebc);
-        boolean inNeighborhood1 = averageWeight[entityId] <= weight;
-        boolean inNeighborhood2 = averageWeight[neighborId] <= weight;
+    	 double weight = getWeight(entityId, neighborId, ebc);
+         boolean inNeighborhood1 = averageWeight[entityId] <= weight;
+         boolean inNeighborhood2 = averageWeight[neighborId] <= weight;
 
-        switch (threshold_type) {
-            case AVG:
-                if (inNeighborhood1 && inNeighborhood2) {
-                    return entityId < neighborId;
-                }
-                break;
-            case AM2:
-                //System.out.println("AM2");
-                double th_12 = (averageWeight[entityId] + averageWeight[neighborId]) / 2;
-                //double th_12 = Math.sqrt(Math.pow(averageWeight[entityId], 2) + Math.pow(averageWeight[neighborId], 2)) / 2;
+         switch (threshold_type) {
+             case AVG:
+                 if (inNeighborhood1 && inNeighborhood2) {
+                     return entityId < neighborId;
+                 }
+                 break;
+             case AM2:
+                 //System.out.println("AM2");
+                 double th_12 = (averageWeight[entityId] + averageWeight[neighborId]) / 2;
+                 //double th_12 = Math.sqrt(Math.pow(averageWeight[entityId], 2) + Math.pow(averageWeight[neighborId], 2)) / 2;
 
-                if (th_12 <= weight) {
-                    //if (Math.max(averageWeight[entityId],averageWeight[neighborId]) <= weight) {
-                    return entityId < neighborId;
-                }
-                break;
-            case AM3:
-//                if ((averageWeight[entityId] + averageWeight[neighborId]) / 4 <= weight) {
-//                    //if (Math.max(averageWeight[entityId],averageWeight[neighborId]) <= weight) {
-//                    return entityId < neighborId;
-//                }
-//                break;
-                double th12 = Math.sqrt(Math.pow(averageWeight[entityId], 2) + Math.pow(averageWeight[neighborId], 2)) / 4;
-               // System.out.println(weight +"  " );
-                
+                 if (th_12 <= weight) {
+                     //if (Math.max(averageWeight[entityId],averageWeight[neighborId]) <= weight) {
+                     return entityId < neighborId;
+                 }
+                 break;
+             case AM3:
+//                 if ((averageWeight[entityId] + averageWeight[neighborId]) / 4 <= weight) {
+//                     //if (Math.max(averageWeight[entityId],averageWeight[neighborId]) <= weight) {
+//                     return entityId < neighborId;
+//                 }
+//                 break;
+                 double th12 = Math.sqrt(Math.pow(averageWeight[entityId], 2) + Math.pow(averageWeight[neighborId], 2)) / 4;
                  if (th12 <= weight) {
-                	   if(entityId==1178 )
-                   		System.out.println(entityId+" entityId  "+ " neighborId " +  neighborId+ " "+  weight + " th12 " + th12 + " " + "   " + averageWeight[entityId] +" " + adp.getNoOfDuplicates());
-                   
-//                	if(entityId < neighborId){
-//                	
-//                	 if(isMatch(entityId, neighborId)){
-//                		 acerto++;
-//                		
-//                	}else{                		
-//                		erro++;                		
-//                	}
-//                	}
-                	 return entityId < neighborId;
-                    //if (Math.max(averageWeight[entityId],averageWeight[neighborId]) <= weight) {
-                   
-//                }else{
-//                	
-//                	 if(isMatch(entityId, neighborId)){
-//                		// if(erro%1000==0)
-//                		//	 System.out.println("-------------------------" +weight + " th12 " + th12 + " " + "   " + erro +" " + acerto);
-//                		 erro++;
-//                	 }
-                }else{
-                	//if(entityId < neighborId)
-                	//if(erro%1000==0 && weight> 2000)
-           			
-                	
-                }
-                break;
-        }
-        return false;
+                     //if (Math.max(averageWeight[entityId],averageWeight[neighborId]) <= weight) {
+                     return entityId < neighborId;
+                 }
+                 break;
+         }
+         return false;
     }
 }

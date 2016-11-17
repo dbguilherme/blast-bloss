@@ -3,6 +3,7 @@ package MetaBlocking.FastImplementations;
 import DataStructures.AbstractBlock;
 import MetaBlocking.WeightingScheme;
 import Utilities.ExecuteBlockComparisons;
+import weka.core.Instances;
 
 import java.util.List;
 
@@ -98,45 +99,36 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
 //    }
 
     protected void processEntity(int entityId) {
-        validEntities.clear();
-       // validEntitiesB.clear();
         
-        for(int i=0; i< flags.length;i++){
-        	 flags[i] = -1;
-             counters[i] = 0;
-             counters_entro[i] = 0;
-                
-       }
-       
+    	for (int validEntries : validEntities) {
+    	    flags[validEntries] = -1;
+    	    counters[validEntries] = 0;
+        	counters_entro[validEntries] = 0;
+    	}
+    	    	   	
+    	validEntities.clear();
+    	validEntitiesB.clear();
         
         final int[] associatedBlocks = entityIndex.getEntityBlocks(entityId, 0);
         if (associatedBlocks.length == 0) {
             return;
         }
-
         
         for (int blockIndex : associatedBlocks) {
+        	
             setNormalizedNeighborEntities(blockIndex, entityId);
-            
             for (int neighborId : neighbors) {
-            //	if(entityId==1178 && neighborId==2562)
-             //   	System.out.println("ok");
                 if (flags[neighborId] != entityId) {
                     counters[neighborId] = 0;
                     counters_entro[neighborId] = 0;
                     flags[neighborId] = entityId;
                 }
-               // if(neighborId==(4592+datasetLimit))
-                //	System.out.println("ok");
                 counters[neighborId]++;
                 counters_entro[neighborId] += entityIndex.getEntropyBlock(blockIndex);
-              // if(counters[neighborId]>5)
-              //  System.out.println(counters[neighborId]+  " counters_entro: " + counters_entro[neighborId] + " " + neighborId);
                 validEntities.add(neighborId);
-                //validEntitiesB.add(blockIndex);
-                		//if(entityId==1178 && neighborId==2562)
-                        //	System.out.println("ok");
+                validEntitiesB.add(blockIndex);
             }
+            
         }
     }
 
@@ -207,7 +199,7 @@ public class WeightedEdgePruning extends AbstractFastMetablocking {
         }
     }
 
-    protected boolean verifyValidEntities(int entityId, int i, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
+    protected boolean verifyValidEntities(int entityId, int i, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc, Instances trainingInstances) {
         retainedNeighbors.clear();
         if (!cleanCleanER) {
             for (int neighborId : validEntities) {
