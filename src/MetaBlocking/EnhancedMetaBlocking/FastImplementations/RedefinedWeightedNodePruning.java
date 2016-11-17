@@ -32,7 +32,7 @@ import BlockProcessing.ComparisonRefinement.AbstractDuplicatePropagation;
  */
 public class RedefinedWeightedNodePruning extends WeightedNodePruning {
 
-	Map<Integer,List<Integer>> map = new HashMap<Integer,List<Integer>>();
+	Map<Integer,Integer> map = new HashMap<Integer,Integer>();
     protected double[] averageWeight;
     int values[][] = new int[3000][65000];
     public RedefinedWeightedNodePruning(WeightingScheme scheme) {
@@ -131,7 +131,7 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
         noOfAttributes = attributes.size();
     }
     
-   
+   int apagar=0;
     
    // @Override
     protected List<AbstractBlock> pruneEdges(List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc, AbstractDuplicatePropagation adp) {
@@ -154,104 +154,120 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
             }
         }
         else {
-        	for(AbstractBlock block : newBlocks) {
-        		retainedEntitiesD1.clear();
-        		retainedEntitiesD2.clear();
-                ComparisonIterator iterator = block.getComparisonIterator();
-                while (iterator.hasNext()) {
-                	
-                	  Comparison comparison = iterator.next();
-                	  int flag=0;
-                	  Integer key = comparison.getEntityId1();
-                	  List<Integer> list = map.get(key);
-                	  if (list == null)
-                	  {
-                	      list = new LinkedList<Integer>();
-                	      map.put(key,list);
-                	  }else{
-                		  for (int j = 0; j < list.size(); j++) {
-                			  if(list.get(j).equals(comparison.getEntityId2())){
-//                				  System.out.println("encontrou----------------------");
-  								  flag=1;
-                				  break;
-                			}
-                		  }
-                	  }
-                	  list.add(comparison.getEntityId2());
-                	 
-                	  if(flag==1)
-                		  continue;
-//                	  if(values[comparison.getEntityId1()][comparison.getEntityId2()]==1){
-//                		  System.out.println("ok");
+//        	for(AbstractBlock block : newBlocks) {
+//        		retainedEntitiesD1.clear();
+//        		retainedEntitiesD2.clear();
+//                ComparisonIterator iterator = block.getComparisonIterator();
+//                while (iterator.hasNext()) {
+//                	
+//                	  Comparison comparison = iterator.next();
+//                	  int flag=0;
+//                	  //Integer key = comparison.getEntityId1();
+//                	  Integer value = map.get(comparison.getEntityId1());
+//                	  if (value !=null && value==comparison.getEntityId2())
+//                	  {
+//                		  continue;
+////                	      list = new LinkedList<Integer>();
+////                	      map.put(key,list);
+////                	  }else{
+////                		  for (int j = 0; j < list.size(); j++) {
+////                			  if(list.get(j).equals(comparison.getEntityId2())){
+//////                				  System.out.println("encontrou----------------------");
+////  								  flag=1;
+////                				  break;
+////                			}
+////                		  }
+//                	  }
+//                	  value = map.get(comparison.getEntityId2());
+//                	  if (value !=null && value == comparison.getEntityId1())
+//                	  {
 //                		  continue;
 //                	  }
-//                	  values[comparison.getEntityId1()][comparison.getEntityId2()]=1;
-                	  
-                	  processEntity(comparison.getEntityId1());
-                      final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
-                      
-                      if(verifyValidEntities(comparison.getEntityId1(), comparison.getEntityId2()+datasetLimit, newBlocks,ebc)){
-                    	  if(!retainedEntitiesD1.contains(comparison.getEntityId1()))
-                    		  retainedEntitiesD1.add(comparison.getEntityId1());
-                    	  if(!retainedEntitiesD2.contains(comparison.getEntityId2()))
-                    		  retainedEntitiesD2.add(comparison.getEntityId2());
-                    	  ////////////////////////////
-                    	  double[] instanceValues = new double[7];
-
-                          int entityId2 = comparison.getEntityId2() + entityIndex.getDatasetLimit();
-
-                          double ibf1 = Math.log(noOfBlocks/entityIndex.getNoOfEntityBlocks(comparison.getEntityId1(), 0));
-                          double ibf2 = Math.log(noOfBlocks/entityIndex.getNoOfEntityBlocks(comparison.getEntityId2(), 1));
-                          instanceValues[0] = commonBlockIndices.size()*ibf1*ibf2;
-
-                          
-                          
-                          double raccb = 0;
-                          for (Integer index : commonBlockIndices) {
-                              raccb += 1.0 / comparisonsPerBlock[index];
-                          }
-                          if (raccb < 1.0E-6) {
-                              raccb = 1.0E-6;
-                          }
-                          instanceValues[1] = raccb;
-
-                          instanceValues[2] = commonBlockIndices.size() / (redundantCPE[comparison.getEntityId1()] + redundantCPE[entityId2] - commonBlockIndices.size());
-                          instanceValues[3] = nonRedundantCPE[comparison.getEntityId1()];
-                          instanceValues[4] = nonRedundantCPE[entityId2];
-                          instanceValues[5] =ebc.getSimilarityAttribute(comparison.getEntityId1(), comparison.getEntityId2());
-                          
-                          instanceValues[6] = adp.isSuperfluous(getComparison(comparison.getEntityId1(), entityId2))?1:0;
-
-                          Instance newInstance = new DenseInstance(1.0, instanceValues);
-                          newInstance.setDataset(trainingInstances);
-                          trainingInstances.add(newInstance);
-                      };
-                      count++;
-                }
-                if(!retainedEntitiesD1.isEmpty() || !retainedEntitiesD2.isEmpty()){
-                	int[] blockEntitiesD1 = Converter.convertCollectionToArray(retainedEntitiesD1);
-                	int[] blockEntitiesD2 = Converter.convertCollectionToArray(retainedEntitiesD2);
-                	blockAfterPrunning.add(new BilateralBlock(blockEntitiesD1, blockEntitiesD2, 0.0));
-                	//if(retainedEntitiesD1.size()>2)
-                	//	System.out.println("ok");
-                }
-        	}
-        	BufferedWriter writer;
-			try {
-				writer = new BufferedWriter(new FileWriter("/tmp/test.arff"));
-				writer.write(trainingInstances.toString());
-	        	 writer.flush();
-	        	 writer.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//                	  map.put(comparison.getEntityId1(),comparison.getEntityId2());
+//////                	 
+////                	  if(flag==1)
+////                		  continue;
+////                	  if(values[comparison.getEntityId1()][comparison.getEntityId2()]==1){
+////                		  System.out.println("ok");
+////                		  continue;
+////                	  }
+////                	  values[comparison.getEntityId1()][comparison.getEntityId2()]=1;
+//                	  
+//                	  processEntity(comparison.getEntityId1());
+//                     
+//                      
+//                      if(verifyValidEntities(comparison.getEntityId1(), comparison.getEntityId2()+datasetLimit, newBlocks,ebc)){
+//                    	  
+//                    	  final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
+//                    	  if(commonBlockIndices==null)
+//                    		  continue;
+//                    	  if(!retainedEntitiesD1.contains(comparison.getEntityId1()))
+//                    		  retainedEntitiesD1.add(comparison.getEntityId1());
+//                    	  if(!retainedEntitiesD2.contains(comparison.getEntityId2()))
+//                    		  retainedEntitiesD2.add(comparison.getEntityId2());
+//                    	  ////////////////////////////
+//                    	  double[] instanceValues = new double[7];
+//
+//                          int entityId2 = comparison.getEntityId2() + entityIndex.getDatasetLimit();
+//
+//                          double ibf1 = Math.log(noOfBlocks/entityIndex.getNoOfEntityBlocks(comparison.getEntityId1(), 0));
+//                          double ibf2 = Math.log(noOfBlocks/entityIndex.getNoOfEntityBlocks(comparison.getEntityId2(), 1));
+//                        
+//                          instanceValues[0] = commonBlockIndices.size()*ibf1*ibf2;
+//
+//                          
+//                          
+//                          double raccb = 0;
+//                          for (Integer index : commonBlockIndices) {
+//                              raccb += 1.0 / comparisonsPerBlock[index];
+//                          }
+//                          if (raccb < 1.0E-6) {
+//                              raccb = 1.0E-6;
+//                          }
+//                          instanceValues[1] = raccb;
+//
+//                          instanceValues[2] = commonBlockIndices.size() / (redundantCPE[comparison.getEntityId1()] + redundantCPE[entityId2] - commonBlockIndices.size());
+//                          instanceValues[3] = nonRedundantCPE[comparison.getEntityId1()];
+//                          instanceValues[4] = nonRedundantCPE[entityId2];
+//                          instanceValues[5] =ebc.getSimilarityAttribute(comparison.getEntityId1(), comparison.getEntityId2());
+//                          
+//                          instanceValues[6] = adp.isSuperfluous(getComparison(comparison.getEntityId1(), entityId2))?1:0;
+//
+//                          Instance newInstance = new DenseInstance(1.0, instanceValues);
+//                          newInstance.setDataset(trainingInstances);
+//                          trainingInstances.add(newInstance);
+//                    	 
+//                    	 // if(instanceValues[6]==1)
+//                    	//	  System.out.println();
+//                      };
+//                      if(apagar++%10000==0)
+//                		  System.out.println(apagar);
+//                      count++;
+//                }
+//                if(!retainedEntitiesD1.isEmpty() || !retainedEntitiesD2.isEmpty()){
+//                	int[] blockEntitiesD1 = Converter.convertCollectionToArray(retainedEntitiesD1);
+//                	int[] blockEntitiesD2 = Converter.convertCollectionToArray(retainedEntitiesD2);
+//                	blockAfterPrunning.add(new BilateralBlock(blockEntitiesD1, blockEntitiesD2, 0.0));
+//                	//if(retainedEntitiesD1.size()>2)
+//                	//	System.out.println("ok");
+//                }
+//        	}
+//        	BufferedWriter writer;
+//			try {
+//				writer = new BufferedWriter(new FileWriter("/tmp/test.arff"));
+//				writer.write(trainingInstances.toString());
+//	        	 writer.flush();
+//	        	 writer.close();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
         	 
 //        	
-//            for (int i = 0; i < noOfEntities; i++) {
-//                processEntity(i);
-//                verifyValidEntities(i,0, newBlocks,ebc);
-//            }
+            for (int i = 0; i < noOfEntities; i++) {
+                processEntity(i);
+                verifyValidEntities(i,0, newBlocks,ebc);
+            }
            
         }
         System.out.println("count----" + count);

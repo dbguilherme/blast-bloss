@@ -292,7 +292,7 @@ public class SMB {
 			BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
 		    double[] values = bStats1.applyProcessing();
 		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
-			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.005);
+			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.01);
 			blockPurging.applyProcessing(blocks,adp);
 			
 			//////////			
@@ -330,25 +330,23 @@ public class SMB {
 		int num_blocks=0;
 		
 		ExecuteBlockComparisons ebc = new ExecuteBlockComparisons(profilesPath);
-		WeightingScheme[] ws1 = new WeightingScheme[1];
-        ws1[0] = WeightingScheme.ECBS;
 
 		//for(profiles)
 		//System.out.println(" numero comparações --> "+ num_blocks);
 		adp =new BilateralDuplicatePropagation(groundTruthPath);
 		
 		 
-		OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning b_wnp = new OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning(adp, ws, th_schme, blocks.size());
-		b_wnp.applyProcessing(blocks, adp, ebc);
-		// BlastWeightedNodePruning b_wnp = new BlastWeightedNodePruning(adp, ws, th_schme, blocks.size());
-		// b_wnp.applyProcessing(blocks,adp,ebc);
-//	     double[] values = b_wnp.getPerformance();
+		//OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning b_wnp = new OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning(adp, ws, th_schme, blocks.size());
+		//b_wnp.applyProcessing(blocks, adp, ebc);
+		 BlastWeightedNodePruning b_wnp = new BlastWeightedNodePruning(adp, ws, th_schme, blocks.size());
+		 b_wnp.applyProcessing(blocks,adp,ebc);
+	     double[] values = b_wnp.getPerformance();
 //
-//	    System.out.println("pc: " + values[0]);
-//	    System.out.println("pq: " + values[1]);
-//	    System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
-//	    System.out.println("blocks " + blocks.size() +" blocks " );
-//	    int count=0;
+	    System.out.println("pc: " + values[0]);
+	    System.out.println("pq: " + values[1]);
+	    System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
+	    System.out.println("blocks " + blocks.size() +" blocks " );
+	    int count=0;
 	   
 	        if(blocks.isEmpty()){
 	        	
@@ -356,7 +354,7 @@ public class SMB {
 	        	return;
 	        }
 	        BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
-	        double[] values = bStats1.applyProcessing();
+	        values = bStats1.applyProcessing();
 	        System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
 		//            System.out.println("\n\n\n\n\n======================= Supervised CEP =======================");
 

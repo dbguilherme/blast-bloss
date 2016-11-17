@@ -79,7 +79,7 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
     }
  int count=0;
     //@Override
-    protected boolean verifyValidEntities(int entityId, int neighborId, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
+    protected boolean verifyValidEntities(int entityId, int neighborId2, List<AbstractBlock> newBlocks, ExecuteBlockComparisons ebc) {
     	int index;
     	retainedNeighbors.clear();
         if (!cleanCleanER) {
@@ -92,7 +92,7 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
         } else {
             if (entityId < datasetLimit) {
 //            	//Iterator<Integer> temp = validEntitiesB.iterator();
-             //  for (int neighborId : validEntities) 
+               for (int neighborId : validEntities) 
                 {
             	  // if(entityId==1178 && neighborId==2562)
                  //  	System.out.println("ok");
@@ -106,7 +106,7 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
 
                }
             } else {
-              //  for (int neighborId : validEntities) 
+                for (int neighborId : validEntities) 
                 {
                     if (isValidComparison(entityId, neighborId,ebc)) 
                     {

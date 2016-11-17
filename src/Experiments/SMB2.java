@@ -274,7 +274,7 @@ public class SMB2 {
 		String profilesPathB=null;
 		String groundTruthPath = null;
 		String[] args1 =new String[2];
-		args1[0]="dblp";
+		args1[0]="3";
 		args1[1]="10K";
 		
 		//args1[0]="acm";

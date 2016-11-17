@@ -233,61 +233,61 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
 //         }
     	
     	 
-    	 initializeDataStructures();
-    	 classifiers[0].buildClassifier(loadSet("/tmp/final_treina.arff"));
+//    	 initializeDataStructures();
+//    	 classifiers[0].buildClassifier(loadSet("/tmp/final_treina.arff"));
+//    	 
+//    	 
+//    	 Instances data=loadSet("/tmp/test.arff");
+//    	 
+//    	 
+//    	 int count=0,erro=0,falso_positivo=0;
+//    	 for (int i = 0; i < data.size(); i++) {
+//    		 int instanceLabel = (int) classifiers[0].classifyInstance(data.get(i));  
+//             if (instanceLabel == 1) {
+//                 
+//            	 if(data.get(i).classValue()==1){
+//            		 count++;
+//            	 }
+//             }else
+//             {
+//            	 if(data.get(i).classValue()==1){
+//            		 erro++;
+//            		 for (int j = 0; j < 6; j++) {
+//						System.out.print(data.get(i).value(j) +"  ");
+//					}
+//            		 System.out.println("");
+//            		 //System.out.println(data.get(i).v);
+//            	 }else
+//            		 falso_positivo++;
+//            		 
+//             }
+//		}
+//    	 System.out.println("count " + count +" erro "+ erro +"  "+ falso_positivo);
     	 
     	 
-    	 Instances data=loadSet("/tmp/test.arff");
     	 
-    	 
-    	 int count=0,erro=0,falso_positivo=0;
-    	 for (int i = 0; i < data.size(); i++) {
-    		 int instanceLabel = (int) classifiers[0].classifyInstance(data.get(i));  
-             if (instanceLabel == 1) {
-                 
-            	 if(data.get(i).classValue()==1){
-            		 count++;
-            	 }
-             }else
-             {
-            	 if(data.get(i).classValue()==1){
-            		 erro++;
-            		 for (int j = 0; j < 6; j++) {
-						System.out.print(data.get(i).value(j) +"  ");
-					}
-            		 System.out.println("");
-            		 //System.out.println(data.get(i).v);
-            	 }else
-            		 falso_positivo++;
-            		 
-             }
-		}
-    	 System.out.println("count " + count +" erro "+ erro +"  "+ falso_positivo);
-    	 
-    	 
-    	 
-//        getTrainingSet(iteration);
-//        for (int i = 0; i < classifiers.length; i++) {
-//            System.out.println("\n\nClassifier id\t:\t" + i);
-//            initializeDataStructures();
-//            
-//            long startingTime = System.currentTimeMillis();
-//            classifiers[i].buildClassifier(trainingInstances);
-//            applyClassifier(classifiers[i]);
-//            List<AbstractBlock> newBlocks = gatherComparisons();
-//            double overheadTime = System.currentTimeMillis()-startingTime;
-//            System.out.println("CL"+i+" Overhead time\t:\t" + overheadTime);
-//            overheadTimes[i].add(overheadTime);
-//            
-//            //commented out for faster experiments
-//            //use when measuring resolution time
-//            long comparisonsTime = 0;//ebc.comparisonExecution(newBlocks);
-//            System.out.println("CL"+i+" Classification time\t:\t" + (comparisonsTime+overheadTime));
-//            resolutionTimes[i].add(new Double(comparisonsTime+overheadTime));
-//            
-//            double th = 0;
-//			processComparisons(i, iteration, writer1, writer2,writer3, writer4,th);
-//        }
+        getTrainingSet(iteration);
+        for (int i = 0; i < classifiers.length; i++) {
+            System.out.println("\n\nClassifier id\t:\t" + i);
+            initializeDataStructures();
+            
+            long startingTime = System.currentTimeMillis();
+            classifiers[i].buildClassifier(trainingInstances);
+            applyClassifier(classifiers[i]);
+            List<AbstractBlock> newBlocks = gatherComparisons();
+            double overheadTime = System.currentTimeMillis()-startingTime;
+            System.out.println("CL"+i+" Overhead time\t:\t" + overheadTime);
+            overheadTimes[i].add(overheadTime);
+            
+            //commented out for faster experiments
+            //use when measuring resolution time
+            long comparisonsTime = 0;//ebc.comparisonExecution(newBlocks);
+            System.out.println("CL"+i+" Classification time\t:\t" + (comparisonsTime+overheadTime));
+            resolutionTimes[i].add(new Double(comparisonsTime+overheadTime));
+            
+            double th = 0;
+			processComparisons(i, iteration, writer1, writer2,writer3, writer4,th);
+        }
     }
     
     private Instances loadSet(String file) {
@@ -498,6 +498,8 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
         	//System.out.println("                non "+ getWeight(comparison.getEntityId1(),comparison.getEntityId2()));
         
       // System.out.print(match +" \n"); 
+        if(comparison.getEntityId1()== 24522 && comparison.getEntityId2()==19397)
+			System.out.println();
         instanceValues[5] = match;
         Instance newInstance = new DenseInstance(1.0, instanceValues);
         newInstance.setDataset(trainingInstances);
