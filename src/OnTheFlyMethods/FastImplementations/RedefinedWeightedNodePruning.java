@@ -26,12 +26,15 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlocking.FastImplementations.RedefinedWeightedNodePruning {
 
     protected double totalComparisons;
+    Map<Integer,Integer> map = new HashMap<Integer,Integer>();
     protected final AbstractDuplicatePropagation duplicatePropagation;
 
     public RedefinedWeightedNodePruning(AbstractDuplicatePropagation adp, WeightingScheme scheme) {
@@ -101,6 +104,21 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
                for (int neighborId : validEntities) 
                 {
             	   
+             	  Integer value = map.get(entityId);
+             	  if (value !=null && value==neighborId){
+             		 // System.out.println("----");
+             		  continue;
+             	  }
+             		  
+             	  value = map.get(neighborId);
+             	  if (value !=null && value == entityId){
+             		 // System.out.println("----");
+             		  continue;
+             	  }
+             		  
+             	  map.put(entityId,neighborId);
+            	   
+            	   
             	  // if(entityId==1178 && neighborId==2562)
                  //  	System.out.println("ok");
 //                	// index=temp.next();
@@ -111,6 +129,8 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
                         duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
                         if(apagar++%1000==0)
                    		  System.out.println(apagar);
+
+                        
                         Comparison c ;
                         if(entityId<datasetLimit)
                         	c = new Comparison(true, entityId, neighborId-datasetLimit);
@@ -124,6 +144,9 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
 //                  	  if(!retainedEntitiesD2.contains(comparison.getEntityId2()))
 //                  		  retainedEntitiesD2.add(comparison.getEntityId2());
                   	  ////////////////////////////
+                  	  
+                  	if(c.getEntityId1()==1 && c.getEntityId2()==12088)
+                    	System.out.println();
                   	  double[] instanceValues = new double[7];
 
                        // int entityId2 = comparison.getEntityId2() + entityIndex.getDatasetLimit();
@@ -142,13 +165,16 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
                         }
                         instanceValues[1] = raccb;
 
+                        String temp=Integer.toString(entityId) +"00"+ Integer.toString(neighborId-datasetLimit); 
                         instanceValues[2] = commonBlockIndices.size() / (redundantCPE[c.getEntityId1()] + redundantCPE[c.getEntityId2()] - commonBlockIndices.size());
                         instanceValues[3] = nonRedundantCPE[c.getEntityId1()];
                         instanceValues[4] = nonRedundantCPE[c.getEntityId2()];
-                       // instanceValues[5] =ebc.getSimilarityAttribute(comparison.getEntityId1(), comparison.getEntityId2());
+                       
+                        
+                        	instanceValues[5] =	ebc.getSimilarityAttribute(c.getEntityId1(), c.getEntityId2());
                         
                         instanceValues[6] = adp.isSuperfluous(getComparison(entityId, neighborId))?1:0;
-
+                        
                         Instance newInstance = new DenseInstance(1.0, instanceValues);
                         newInstance.setDataset(trainingInstances);
                         trainingInstances.add(newInstance);                      
@@ -158,12 +184,33 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
             	Iterator<Integer> it = validEntitiesB.iterator();
                 for (int neighborId : validEntities) 
                 {                	
+                	
+                	 Integer value = map.get(entityId);
+                	  if (value !=null && value==neighborId){
+                		 // System.out.println("----");
+                		  continue;
+                	  }
+                		  
+                	  value = map.get(neighborId);
+                	  if (value !=null && value == entityId){
+                		 // System.out.println("----");
+                		  continue;
+                	  }
+                		  
+                	  map.put(entityId,neighborId);
+                	
+                	
                 	   int blockIndex=it.next();
                     if (isValidComparison(entityId, neighborId,ebc)) {
                         totalComparisons++;
                         duplicatePropagation.isSuperfluous(getComparison(entityId, neighborId));
                         if(apagar++%1000==0)
                   		  System.out.println(apagar);
+                        
+                        if(apagar==3)
+                        	System.out.println();
+                        
+                        
                         Comparison c ;
                         if(entityId<datasetLimit)
                         	c = new Comparison(true, entityId, neighborId-datasetLimit);
@@ -200,7 +247,7 @@ public class RedefinedWeightedNodePruning extends MetaBlocking.EnhancedMetaBlock
                             instanceValues[2] = commonBlockIndices.size() / (redundantCPE[c.getEntityId1()] + redundantCPE[neighborId-datasetLimit] - commonBlockIndices.size());
                             instanceValues[3] = nonRedundantCPE[entityId];
                             instanceValues[4] = nonRedundantCPE[neighborId-datasetLimit];
-                           // instanceValues[5] =ebc.getSimilarityAttribute(comparison.getEntityId1(), comparison.getEntityId2());
+                            instanceValues[5] =ebc.getSimilarityAttribute(c.getEntityId1(), c.getEntityId2());
                             
                             instanceValues[6] = adp.isSuperfluous(getComparison(entityId, neighborId))?1:0;
 

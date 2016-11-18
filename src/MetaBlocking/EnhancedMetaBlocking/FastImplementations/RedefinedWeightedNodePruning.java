@@ -32,7 +32,7 @@ import BlockProcessing.ComparisonRefinement.AbstractDuplicatePropagation;
  */
 public class RedefinedWeightedNodePruning extends WeightedNodePruning {
 
-	Map<Integer,Integer> map = new HashMap<Integer,Integer>();
+	
     protected double[] averageWeight;
     int values[][] = new int[3000][65000];
     public RedefinedWeightedNodePruning(WeightingScheme scheme) {
@@ -164,19 +164,7 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
                 	  //Comparison comparison = iterator.next();
                 	 // int flag=0;
                 	  //Integer key = comparison.getEntityId1();
-//                	  Integer value = map.get(i);
-//                	  if (value !=null && value==comparison.getEntityId2()){
-//                		 // System.out.println("----");
-//                		  continue;
-//                	  }
-//                		  
-//                	  value = map.get(comparison.getEntityId2());
-//                	  if (value !=null && value == comparison.getEntityId1()){
-//                		 // System.out.println("----");
-//                		  continue;
-//                	  }
-//                		  
-//                	  map.put(comparison.getEntityId1(),comparison.getEntityId2());
+
                 	  processEntity(i);
                       
                       if(verifyValidEntities(i, 0, newBlocks,ebc,trainingInstances)){

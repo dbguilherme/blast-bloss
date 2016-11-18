@@ -266,6 +266,7 @@ public class SMB {
 		List<AbstractBlock> blocks = null;
 		
 		BilateralDuplicatePropagation adp =new BilateralDuplicatePropagation(groundTruthPath);
+		
 		List<EntityProfile>[] profiles ;
 		if(profilesPathB != null){
 			profiles = new List[2];
@@ -292,7 +293,7 @@ public class SMB {
 			BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
 		    double[] values = bStats1.applyProcessing();
 		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
-			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.001);
+			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.05);
 			blockPurging.applyProcessing(blocks,adp);
 			
 			//////////			
