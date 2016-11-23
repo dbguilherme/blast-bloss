@@ -41,34 +41,89 @@ public class SupervisedWEP extends AbstractSupervisedMetablocking {
     
     private List<Integer> retainedEntities1;
     private List<Integer> retainedEntities2;
+    Set<IdDuplicates> duplicatePairs;
     
     public SupervisedWEP (int noOfClassifiers, List<AbstractBlock> bls, Set<IdDuplicates> duplicatePairs, ExecuteBlockComparisons ebc) {
         super (noOfClassifiers, bls, duplicatePairs, ebc);
+        this.duplicatePairs=duplicatePairs;
     }
 
     @Override
-    protected void applyClassifier(Classifier classifier) throws Exception {
-        for (AbstractBlock block : blocks) {
-            ComparisonIterator iterator = block.getComparisonIterator();
-            while (iterator.hasNext()) {
-                Comparison comparison = iterator.next();
-                final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
-                if (commonBlockIndices == null) {
-                    continue;
-                }
-
-                if (trainingSet.contains(comparison)) {
-                  //  continue;
-                }
-
-                Instance currentInstance = getFeatures(NON_DUPLICATE, commonBlockIndices, comparison, noOfBlocks);
-                int instanceLabel = (int) classifier.classifyInstance(currentInstance);  
-                if (instanceLabel == DUPLICATE) {
-                    retainedEntities1.add(comparison.getEntityId1());
-                    retainedEntities2.add(comparison.getEntityId2());
-                }
-            }
-        }
+    protected void applyClassifier(Classifier classifier , List<ArrayList<Instance>> testSet) throws Exception {
+//        for (AbstractBlock block : blocks) {
+//            ComparisonIterator iterator = block.getComparisonIterator();
+//            while (iterator.hasNext()) {
+//                Comparison comparison = iterator.next();
+//                final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
+//                if (commonBlockIndices == null) {
+//                    continue;
+//                }
+//
+//                if (trainingSet.contains(comparison)) {
+//                  //  continue;
+//                }
+//
+//                Instance currentInstance = getFeatures(NON_DUPLICATE, commonBlockIndices, comparison, noOfBlocks);
+//                int instanceLabel = (int) classifier.classifyInstance(currentInstance);  
+//                if (instanceLabel == DUPLICATE) {
+//                    retainedEntities1.add(comparison.getEntityId1());
+//                    retainedEntities2.add(comparison.getEntityId2());
+//                }
+//            }
+//        }
+    	
+    	int tp=0,fp=0,fn=0,vn=0;
+    	for (int i = 0; i < testSet.size(); i++)		
+		{
+    		ArrayList<Instance> list = testSet.get(i);
+    		count=0;
+    		//Iterator<Instance> listit = list.iterator();
+    		int controle=0;
+    		while(controle<list.size()){
+    			//System.out.println("teste " + controle);
+    			Instance currentInstance=list.get(controle);
+    			 int instanceLabel = (int) classifier.classifyInstance(currentInstance);  
+                 if (instanceLabel == DUPLICATE) {
+                	 if(currentInstance.classValue()==1.0)
+                		 tp++;
+                	 else
+                		 fp++;
+                    // retainedEntities1.add(comparison.getEntityId1());
+                    // retainedEntities2.add(comparison.getEntityId2());
+                 }else{
+                	 if(currentInstance.classValue()==0.0)
+                		 vn++;
+                	 else
+                		 fn++;
+                 }
+                 controle++;
+    		}
+    		
+		}
+    	System.out.println("controle "+ tp +"  "+ fp +" ---test---" +vn +" " +fn +" ---  "+  testSet.size() );
+		System.out.println(" pq " + (double)tp/duplicatePairs.size() + " "+ (double)tp/(tp+fp));
+    	
+//    	{
+//            ComparisonIterator iterator = block.getComparisonIterator();
+//            while (iterator.hasNext()) {
+//                Comparison comparison = iterator.next();
+//                final List<Integer> commonBlockIndices = entityIndex.getCommonBlockIndices(block.getBlockIndex(), comparison);
+//                if (commonBlockIndices == null) {
+//                    continue;
+//                }
+//
+//                if (trainingSet.contains(comparison)) {
+//                  //  continue;
+//                }
+//
+//                Instance currentInstance = getFeatures(NON_DUPLICATE, commonBlockIndices, comparison, noOfBlocks);
+//                int instanceLabel = (int) classifier.classifyInstance(currentInstance);  
+//                if (instanceLabel == DUPLICATE) {
+//                    retainedEntities1.add(comparison.getEntityId1());
+//                    retainedEntities2.add(comparison.getEntityId2());
+//                }
+//            }
+//        }
     }
 
     @Override

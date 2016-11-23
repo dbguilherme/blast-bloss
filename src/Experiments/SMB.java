@@ -1,7 +1,5 @@
 package Experiments;
 
-import static java.util.Arrays.asList;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,61 +8,36 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import BlockBuilding.MemoryBased.AttributeClusteringBlockingEntropy;
 import BlockBuilding.MemoryBased.TokenBlocking;
 import BlockProcessing.AbstractEfficiencyMethod;
 import BlockProcessing.BlockRefinement.BlockFiltering;
 import BlockProcessing.BlockRefinement.ComparisonsBasedBlockPurging;
-import BlockProcessing.BlockRefinement.SizeBasedBlockPurging;
 import BlockProcessing.ComparisonRefinement.BilateralDuplicatePropagation;
 import DataStructures.AbstractBlock;
-import DataStructures.Attribute;
-import DataStructures.EntityIndex;
 import DataStructures.EntityProfile;
 import DataStructures.IdDuplicates;
 import MetaBlocking.ThresholdWeightingScheme;
 import MetaBlocking.WeightingScheme;
-import MetaBlocking.EnhancedMetaBlocking.RedefinedWeightedNodePruning;
-import MetaBlocking.FastImplementations.WeightedEdgePruning;
-import MetaBlocking.FastImplementations.WeightedNodePruning;
 import OnTheFlyMethods.FastImplementations.BlastWeightedNodePruning;
-import SupervisedMetablocking.SupervisedCNP;
 import SupervisedMetablocking.SupervisedWEP;
 import Utilities.BlockStatistics;
-import Utilities.ComparisonIterator;
 import Utilities.ExecuteBlockComparisons;
-import Utilities.ExportBlocks;
 import Utilities.RepresentationModel;
 import Utilities.SerializationUtilities;
-
-import libsvm.svm;
-import libsvm.svm_model;
 import libsvm.svm_parameter;
-import libsvm.svm_problem;
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.NaiveBayes;
 //import weka.classifiers.functions.LibSVM;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.functions.supportVector.PolyKernel;
-import weka.classifiers.functions.supportVector.RBFKernel;
 import weka.classifiers.trees.J48;
-import weka.classifiers.trees.RandomForest;
-import weka.core.SelectedTag;
-//import weka.classifiers.functions.LibSVM;;
 
 /**
  *
@@ -216,7 +189,7 @@ public class SMB {
 		String profilesPathB=null;
 		String groundTruthPath = null;
 		String[] args1 =new String[2];
-		args1[0]="3";
+		args1[0]="2";
 		args1[1]="10K";
 		 WeightingScheme ws = WeightingScheme.CHI_ENTRO;
 	        //WeightingScheme ws = WeightingScheme.FISHER_ENTRO; // For dirty dataset use this test-statistic because of the low number of co-occurrence in the blocks (Fisher exact test vs. Chi-squared ~ approximated)
@@ -231,7 +204,7 @@ public class SMB {
 			groundTruthPath =  mainDirectory+"/"+args1[1]+"IdDuplicates";	
 			System.out.println("-----------"+mainDirectory);
 			break;
-		case "dblp":
+		case "2":
 			mainDirectory = System.getProperty("user.home")+"/Dropbox/blocagem/bases/base_clean_serializada";
 			profilesPathA= mainDirectory+"/dblp";
 			profilesPathB= mainDirectory+"/scholar";
@@ -244,7 +217,7 @@ public class SMB {
 			profilesPathB= mainDirectory+"/token/dataset2_dbpedia";
 			groundTruthPath =  mainDirectory+ "/ground/groundtruth"; 
 			break;
-		case "acm":
+		case "4":
 			mainDirectory = System.getProperty("user.home")+"/Dropbox/blocagem/bases/acm_cleanB";
 			profilesPathA= mainDirectory+"//dblpB";
 			profilesPathB= mainDirectory+"//acmB";
@@ -256,6 +229,19 @@ public class SMB {
 			//alto desbalanceamento descartar essa base
 			mainDirectory = System.getProperty("user.home")+"/Dropbox/blocagem/bases/produtos/";
 			profilesPathA =  mainDirectory+"/"+"amazon"	;	
+			groundTruthPath =  mainDirectory+"/"+"groundtruth";	
+			break;
+		case "6":
+			//alto desbalanceamento descartar essa base
+			mainDirectory = System.getProperty("user.home")+"/Dropbox/blocagem/bases/prod/";
+			profilesPathA =  mainDirectory+"/"+"dataset1_abt";	
+			profilesPathB =  mainDirectory+"/"+"dataset2_buy";
+			groundTruthPath =  mainDirectory+"/"+"groundtruth";	
+			break;	
+		case "7":
+			mainDirectory = "/bkp/bases/blocagem_large";
+			profilesPathA =  mainDirectory+"/"+"dataset1";	
+			profilesPathB =  mainDirectory+"/"+"dataset2";
 			groundTruthPath =  mainDirectory+"/"+"groundtruth";	
 			break;
 		}
@@ -293,18 +279,18 @@ public class SMB {
 			BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
 		    double[] values = bStats1.applyProcessing();
 		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
-			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.05);
-			blockPurging.applyProcessing(blocks,adp);
-			
-			//////////			
-			bStats1 = new BlockStatistics(blocks, adp);
-		    values = bStats1.applyProcessing();
-		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
-			BlockFiltering bf = new BlockFiltering(0.8);
-			bf.applyProcessing(blocks,adp);	
-			bStats1 = new BlockStatistics(blocks, adp);
-		    values = bStats1.applyProcessing();
-		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
+//			AbstractEfficiencyMethod blockPurging = new ComparisonsBasedBlockPurging(1.0005);
+//			blockPurging.applyProcessing(blocks,adp);
+//			
+//			//////////			
+//			bStats1 = new BlockStatistics(blocks, adp);
+//		    values = bStats1.applyProcessing();
+//		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
+//			BlockFiltering bf = new BlockFiltering(0.8);
+//			bf.applyProcessing(blocks,adp);	
+//			bStats1 = new BlockStatistics(blocks, adp);
+//		    values = bStats1.applyProcessing();
+//		    System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
 		    
 		}else{
 			profiles= new List[1];
@@ -336,28 +322,34 @@ public class SMB {
 		//for(profiles)
 		//System.out.println(" numero comparações --> "+ num_blocks);
 		adp =new BilateralDuplicatePropagation(groundTruthPath);
+		WeightingScheme wScheme= WeightingScheme.CHI_ENTRO;
 		
+		MetaBlocking.EnhancedMetaBlocking.FastImplementations.RedefinedCardinalityNodePruning CNP1= new MetaBlocking.EnhancedMetaBlocking.FastImplementations.RedefinedCardinalityNodePruning(wScheme, blocks.size()); 
+//		MetaBlocking.EnhancedMetaBlocking.FastImplementations.ReciprocalCardinalityNodePruning CNP2= new MetaBlocking.EnhancedMetaBlocking.FastImplementations.ReciprocalCardinalityNodePruning(wScheme, blocks_copy.size());
+
+		CNP1.applyProcessing(blocks, adp,ebc);
+
 		 
-		//OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning b_wnp = new OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning(adp, ws, th_schme, blocks.size());
-		//b_wnp.applyProcessing(blocks, adp, ebc);
-		 BlastWeightedNodePruning b_wnp = new BlastWeightedNodePruning(adp, ws, th_schme, blocks.size());
-		 b_wnp.applyProcessing(blocks,adp,ebc);
-	     double[] values = b_wnp.getPerformance();
+//		OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning b_wnp = new OnTheFlyMethods.FastImplementations.RedefinedWeightedNodePruning(adp, ws, th_schme, blocks.size());
+//		b_wnp.applyProcessing(blocks, adp, ebc);
+	//	 BlastWeightedNodePruning b_wnp = new BlastWeightedNodePruning(adp, ws, th_schme, blocks.size());
+	//	 b_wnp.applyProcessing(blocks,adp,ebc);
+//	     double[] values = b_wnp.getPerformance();
 //
-	    System.out.println("pc: " + values[0]);
-	    System.out.println("pq: " + values[1]);
-	    System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
-	    System.out.println("blocks " + blocks.size() +" blocks " );
-	    int count=0;
+//	    System.out.println("pc: " + values[0]);
+//	    System.out.println("pq: " + values[1]);
+//	    System.out.println("f1: " + (2 * values[0] * values[1]) / (values[0] + values[1]));
+//	    System.out.println("blocks " + blocks.size() +" blocks " );
+//	    int count=0;
 	   
-	        if(blocks.isEmpty()){
-	        	
-	        	System.out.println("errooooo");
-	        	return;
-	        }
-	        BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
-	        values = bStats1.applyProcessing();
-	        System.out.println("values 1 " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
+//	        if(blocks.isEmpty()){
+//	        	
+//	        	System.out.println("errooooo");
+//	        	return;
+//	        }
+//	        BlockStatistics bStats1 = new BlockStatistics(blocks, adp);
+//	        values = bStats1.applyProcessing();
+//	        System.out.println("values blast " + values[0] +" values 2 " + values[1] +" values 3" + values[2]);
 		//            System.out.println("\n\n\n\n\n======================= Supervised CEP =======================");
 
 		Classifier[] classifiers = getSupervisedWepClassifiers();
@@ -377,77 +369,76 @@ public class SMB {
 		////		     		   System.out.println("------------" +teste[0] + "  "+ teste[1] + "  "+ teste[0]);
 		//		            }
 		//		            scnp.printStatistics();
-		Random r=new Random();
-		int n=r.nextInt(100);
-
-		BufferedWriter writer1 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador1"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
-		BufferedWriter writer2 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador2"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
-		BufferedWriter writer3 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador3"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
-		BufferedWriter writer4 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador4"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
-
-       
-		
-		//ebc.exportEntityB(entityIds1)
-		classifiers = getSupervisedWepClassifiers();
-		SupervisedWEP swep;
-
-		//new EntityIndex(blocks).enumerateBlocks(blocks);;	
-		File f=new File("/tmp/lock");
-		f.delete();
-
-		System.out.println("\n\n\n\n\n======================= Supervised WEP =======================" + " " + duplicatePairs.size());
-		int i=1,j=5;
-		//for (int i = 1; i <= 2;i++)
-		{
-			swep = new SupervisedWEP(classifiers.length, blocks, duplicatePairs,ebc);
-
-			//blockHash.produceHash(blocks, ebc);
-			int tamanho = 100;
-			//while(tamanho<=1000)
-			{
-
-				writer1.write("level "+tamanho +"\n");
-				writer2.write("level "+tamanho +"\n");
-				writer3.write("level "+tamanho+"\n");
-				writer4.write("level "+tamanho+"\n");
-
-				for (j = 0;j< 1; j++) 
-				{
-					swep.applyProcessing(j, classifiers, ebc, tamanho, writer1,writer2,writer3,writer4,i,profilesPathA.split("/")[profilesPathA.split("/").length-1]);
-
-					writer1.flush();
-					writer2.flush();
-					writer3.flush();
-					writer4.flush();
-				}
-				swep.printStatistics();
-				//swep.printStatisticsB(writer);
-				System.out.println("size of level : "+ tamanho);
-
-
-				if(tamanho==5)
-					tamanho=10;
-				else if(tamanho==10)
-					tamanho=50;
-				else if(tamanho==50)
-					tamanho*=2;
-				else if(tamanho==100)
-					tamanho=500;
-//				
-				else if( tamanho==500)
-					tamanho=1000;
-				else
-				if(tamanho==1000)
-					tamanho+=tamanho;
-//				else tamanho*=tamanho;
-			//	ebc.temp_limiar+=0.1;
-
-
-			}
-		}
-		writer1.close();
-		writer2.close();
-		writer3.close();
+//		Random r=new Random();
+//		int n=r.nextInt(100);
+//
+//		BufferedWriter writer1 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador1"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
+//		BufferedWriter writer2 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador2"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
+//		BufferedWriter writer3 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador3"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
+//		BufferedWriter writer4 = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Dropbox/blocagem/saida50K_classificador4"+profilesPathA.split("/")[profilesPathA.split("/").length-1]));
+//
+//       
+//		
+//		classifiers = getSupervisedWepClassifiers();
+//		SupervisedWEP swep;
+//
+//		//new EntityIndex(blocks).enumerateBlocks(blocks);;	
+//		File f=new File("/tmp/lock");
+//		f.delete();
+//
+//		System.out.println("\n\n\n\n\n======================= Supervised WEP =======================" + " " + duplicatePairs.size());
+//		int i=1,j=5;
+//		//for (int i = 1; i <= 2;i++)
+//		{
+//			swep = new SupervisedWEP(classifiers.length, blocks, duplicatePairs,ebc);
+//
+//			//blockHash.produceHash(blocks, ebc);
+//			int tamanho = 100;
+//			//while(tamanho<=1000)
+//			{
+//
+//				writer1.write("level "+tamanho +"\n");
+//				writer2.write("level "+tamanho +"\n");
+//				writer3.write("level "+tamanho+"\n");
+//				writer4.write("level "+tamanho+"\n");
+//
+//				for (j = 0;j< 1; j++) 
+//				{
+//					swep.applyProcessing(0,j, classifiers, ebc, tamanho, writer1,writer2,writer3,writer4,i,profilesPathA.split("/")[profilesPathA.split("/").length-1]);
+//
+//					writer1.flush();
+//					writer2.flush();
+//					writer3.flush();
+//					writer4.flush();
+//				}
+//				swep.printStatistics();
+//				//swep.printStatisticsB(writer);
+//				System.out.println("size of level : "+ tamanho);
+//
+//
+//				if(tamanho==5)
+//					tamanho=10;
+//				else if(tamanho==10)
+//					tamanho=50;
+//				else if(tamanho==50)
+//					tamanho*=2;
+//				else if(tamanho==100)
+//					tamanho=500;
+////				
+//				else if( tamanho==500)
+//					tamanho=1000;
+//				else
+//				if(tamanho==1000)
+//					tamanho+=tamanho;
+////				else tamanho*=tamanho;
+//			//	ebc.temp_limiar+=0.1;
+//
+//
+//			}
+//		}
+//		writer1.close();
+//		writer2.close();
+//		writer3.close();
 	}
 	//  }
 }

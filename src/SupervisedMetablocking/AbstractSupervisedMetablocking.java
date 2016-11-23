@@ -37,6 +37,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -85,6 +86,9 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
     protected double[] counters_entro;
     protected double max_weight = 0.0d;
     protected List<Integer> neighbors= new ArrayList<>();;
+    
+    protected List<ArrayList<Instance>> testSet= new ArrayList<ArrayList<Instance>>();;
+    
     protected Set<Integer> validEntities= new HashSet<>();;
     
     public double totalBlocks;
@@ -128,7 +132,7 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
         
     }
     
-    protected abstract void applyClassifier(Classifier classifier) throws Exception;
+    protected abstract void applyClassifier(Classifier classifier, List<ArrayList<Instance>> testSet) throws Exception;
     protected abstract List<AbstractBlock> gatherComparisons();
     protected abstract void initializeDataStructures();
     protected abstract void processComparisons(int configurationId, int iteration, BufferedWriter writer1, BufferedWriter writer2, BufferedWriter writer3, BufferedWriter writer4, double th);
@@ -222,10 +226,138 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
     }
     
     
+    public void applyProcessing(int apagar, int iteration, Classifier[] classifiers, ExecuteBlockComparisons ebc, int tamanho, BufferedWriter writer1, BufferedWriter writer2, BufferedWriter writer3, BufferedWriter writer4, int i2, String string) throws Exception{
+    	loadTrainingSet();
+    	
+    	randomSelection();
+    	
+    	for (int i = 0; i < classifiers.length; i++) {
+            System.out.println("\n\nClassifier id\t:\t" + i);
+            initializeDataStructures();
+            
+            long startingTime = System.currentTimeMillis();
+            classifiers[i].buildClassifier(trainingInstances);
+            applyClassifier(classifiers[i],testSet);
+//            List<AbstractBlock> newBlocks = gatherComparisons();
+//            double overheadTime = System.currentTimeMillis()-startingTime;
+//            System.out.println("CL"+i+" Overhead time\t:\t" + overheadTime);
+//            overheadTimes[i].add(overheadTime);
+//            
+//            //commented out for faster experiments
+//            //use when measuring resolution time
+//            long comparisonsTime = 0;//ebc.comparisonExecution(newBlocks);
+//            System.out.println("CL"+i+" Classification time\t:\t" + (comparisonsTime+overheadTime));
+//            resolutionTimes[i].add(new Double(comparisonsTime+overheadTime));
+//            
+//            double th = 0;
+//			processComparisons(i, iteration, writer1, writer2,writer3, writer4,th);
+        }
+    	
+    }
     
     
     
-    public void applyProcessing(int iteration, Classifier[] classifiers, ExecuteBlockComparisons ebc, int tamanho, BufferedWriter writer1, BufferedWriter writer2, BufferedWriter writer3, BufferedWriter writer4, int i2, String string) throws Exception {
+    private void randomSelection() {
+    	
+    	Random r= new Random();
+		int levelSize[]= new int[150];
+		int count=0;
+		ArrayList<Instance> list;
+		for (int i = 0; i < testSet.size(); i++) {
+    		list = testSet.get(i);
+			for (int j = 0; j < list.size(); j++) {
+				count++;
+			}
+			levelSize[i]=count;
+			count=0;
+		}
+	
+//		for (int i = 0; i < levelSize.length; i++) {
+//			System.out.println(levelSize[i]);
+//		}
+		
+		trainingInstances = new Instances("trainingSet", attributes, 500);
+		trainingInstances.setClassIndex(noOfAttributes - 1);
+		double nonMatchRatio = 2500 / (50000);
+		int trueMetadata=0, falseP=0;
+		for (int i = 0; i < testSet.size(); i++)		
+		{
+    		list = testSet.get(i);
+    		count=0;
+    		//Iterator<Instance> listit = list.iterator();
+    		int controle=0;
+    		while(controle<list.size()){
+    			count++;
+    			int temp=r.nextInt(levelSize[i]);
+	    		if(temp<30)
+	    		{
+	    		//	System.out.println(levelSize[i] +"  20928 " + temp  );
+
+	    			Instance ins=list.get(controle++);
+
+	    			int match = NON_DUPLICATE; // false
+					if (ins.valueSparse(attributes.size()-1)==1) {
+						
+						trueMetadata++;
+						if (r.nextDouble() < 0.30) {
+							//trueMetadata++;
+							match = DUPLICATE; // true
+						} else {
+					//		continue;
+						}
+					} else {
+						falseP++;
+					}
+					if (0.000005 <= r.nextDouble()) {
+					//		continue;
+						}else
+							falseP++;
+	    			
+	    			if(ins.valueSparse(attributes.size()-1)==0 && ins.valueSparse(0) >100){
+	    				 				continue;
+	    			}
+	    			trainingInstances.add(ins);
+
+	    		}	
+	    		controle++;
+    		}
+    		//System.out.println("apagar");
+    		//System.out.println(list.size()+ "--------\n\n\n");
+		}
+		System.out.println(" true " + trueMetadata +" falseP "+ falseP);
+		
+		
+	}
+
+	private void loadTrainingSet() {
+    	
+    	for (int j=0; j<150; j++)
+    	    testSet.add(new ArrayList<Instance>());
+    	
+    	
+//    	
+    	Instances instances = loadSet("/tmp/test.arff");
+    	ArrayList<Instance> list;
+    	for (Iterator iterator = instances.iterator(); iterator.hasNext();) {
+			Instance instance = (Instance) iterator.next();
+			int indice=(int)instance.valueSparse(0)/30;
+			if(!testSet.isEmpty() && testSet.get(indice)!=null){
+				list = testSet.get(indice);
+				list.add(instance);
+				//testSet.add(indice, list);
+			}else{
+				list = new ArrayList<Instance>(); 
+				list.add(instance);
+				testSet.add(list);
+			}
+		}
+    	int count=0;
+    	
+    	System.out.println("total size "+ count);
+		
+	}
+
+	public void applyProcessing(int iteration, Classifier[] classifiers, ExecuteBlockComparisons ebc, int tamanho, BufferedWriter writer1, BufferedWriter writer2, BufferedWriter writer3, BufferedWriter writer4, int i2, String string) throws Exception {
 //    	 for (int i = 0; i < entityIndex.getNoOfEntities(); i++) {
 //             processEntity(i);
 //             setThreshold(i);
@@ -273,7 +405,7 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
             
             long startingTime = System.currentTimeMillis();
             classifiers[i].buildClassifier(trainingInstances);
-            applyClassifier(classifiers[i]);
+            applyClassifier(classifiers[i],testSet);
             List<AbstractBlock> newBlocks = gatherComparisons();
             double overheadTime = System.currentTimeMillis()-startingTime;
             System.out.println("CL"+i+" Overhead time\t:\t" + overheadTime);
@@ -297,7 +429,12 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
 			Instances data = new Instances(reader);
 	    	reader.close();
 	    	data.setClassIndex(data.numAttributes() - 1);
+	    	//Instances dt = null;
+	    	//dt.addAll(data);
+	    	
+	    	
 	    	return data;
+	    	
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -327,7 +464,9 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
         attributes.add(new Attribute("NodeDegree1"));
         attributes.add(new Attribute("NodeDegree2"));
        // attributes.add(new Attribute("teste weight"));
-      // attributes.add(new Attribute("teste weight"));
+        attributes.add(new Attribute("teste weight"));
+        attributes.add(new Attribute("teste weight"));
+        
         classLabels = new ArrayList<String>();
         classLabels.add(NON_MATCH);
         classLabels.add(MATCH);
@@ -607,4 +746,6 @@ public abstract class AbstractSupervisedMetablocking implements Constants {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 }

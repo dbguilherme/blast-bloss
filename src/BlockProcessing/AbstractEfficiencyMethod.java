@@ -15,6 +15,7 @@
 package BlockProcessing;
 
 import DataStructures.AbstractBlock;
+import Utilities.ExecuteBlockComparisons;
 import BlockProcessing.ComparisonRefinement.AbstractDuplicatePropagation;
 import java.util.List;
 
@@ -35,10 +36,10 @@ public abstract class AbstractEfficiencyMethod {
         return name;
     }
     
-    public abstract void applyProcessing(List<AbstractBlock> blocks, AbstractDuplicatePropagation adp);
+    public abstract void applyProcessing(List<AbstractBlock> blocks);
     
-    public void applyProcessing(List<AbstractBlock> blocks, AbstractDuplicatePropagation adp) {
-        applyProcessing(blocks,adp);
+    public void applyProcessing(List<AbstractBlock> blocks, AbstractDuplicatePropagation adp, ExecuteBlockComparisons ebc) {
+        applyProcessing(blocks);
 
         double comparisons = 0;
         for (AbstractBlock block : blocks) {            

@@ -121,7 +121,9 @@ public class RedefinedWeightedNodePruning extends WeightedNodePruning {
         attributes.add(new Attribute("NodeDegree1"));
         attributes.add(new Attribute("NodeDegree2"));
         attributes.add(new Attribute("teste weight"));
+       attributes.add(new Attribute("teste weight"));
       // attributes.add(new Attribute("teste weight"));
+       //attributes.add(new Attribute("teste weight"));
         classLabels = new ArrayList<String>();
         classLabels.add("0");
         classLabels.add("1");

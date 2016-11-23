@@ -104,7 +104,8 @@ public abstract class AbstractFastMetablocking extends AbstractFastEfficiencyMet
         }
 
         setThreshold();
-        List<AbstractBlock> blocksB= pruneEdges(blocks,ebc,adp);
+       //pruneEdges(blocks,ebc,adp);
+       applyMainProcessing(blocks,adp,ebc);
 //       int count=0;
 //       for(AbstractBlock block : blocksB) {
 //	    	ComparisonIterator iterator = block.getComparisonIterator();
@@ -114,8 +115,8 @@ public abstract class AbstractFastMetablocking extends AbstractFastEfficiencyMet
 //       }
 //	    
 //	    System.out.println("------------------------------------------" + count);
-        blocks.clear();
-        blocks.addAll(blocksB);        
+      //  blocks.clear();
+      //  blocks.addAll(blocksB);        
     }
 
     protected void freeMemory() {
